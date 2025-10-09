@@ -1,4 +1,4 @@
-# @mcs/coordconversion
+# coordconversion
 
 A robust TypeScript library for converting between different geographic coordinate formats: **Decimal Degrees (DD)**, **Degrees-Minutes (DM)**, and **Degrees-Minutes-Seconds (DMS)**. Features comprehensive parsing, validation, and formatting with support for hemisphere indicators.
 
@@ -18,7 +18,7 @@ A robust TypeScript library for converting between different geographic coordina
 ## Installation
 
 ```bash
-npm install @mcs/coordconversion
+npm install coordconversion
 ```
 
 ## Quick Start
@@ -40,7 +40,7 @@ import {
   formatDMSPair,
   formatDDPair,
   CoordinateType 
-} from '@mcs/coordconversion';
+} from 'coordconversion';
 
 // Parse individual coordinates
 const lat = parseToDD(`48° 51' 23.76" N`, CoordinateType.LAT);
