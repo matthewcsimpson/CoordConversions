@@ -1,4 +1,4 @@
-export enum AngleKind {
+export enum CoordinateType {
   LAT = "lat",
   LON = "lon",
 }
@@ -11,17 +11,17 @@ export enum Hemisphere {
 }
 
 export interface DD {
-  kind: AngleKind;
+  kind: CoordinateType;
   degrees: number;
 }
 export interface DM {
-  kind: AngleKind;
+  kind: CoordinateType;
   degrees: number;
   minutes: number;
   hemi?: Hemisphere;
 }
 export interface DMS {
-  kind: AngleKind;
+  kind: CoordinateType;
   degrees: number;
   minutes: number;
   seconds: number;

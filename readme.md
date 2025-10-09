@@ -39,12 +39,12 @@ import {
   formatDMPair,
   formatDMSPair,
   formatDDPair,
-  AngleKind 
+  CoordinateType 
 } from '@mcs/coordconversion';
 
 // Parse individual coordinates
-const lat = parseToDD(`48° 51' 23.76" N`, AngleKind.LAT);
-const lon = parseToDD('2.3522', AngleKind.LON);
+const lat = parseToDD(`48° 51' 23.76" N`, CoordinateType.LAT);
+const lon = parseToDD('2.3522', CoordinateType.LON);
 
 // Parse coordinate pairs
 const [latPair, lonPair] = parsePairToDD('48.8544° N', '123.5005° W');
@@ -72,7 +72,7 @@ console.log(latStr, lonStr); // "48° 51.26' N" "123° 30.03' W"
 ### Core Types
 
 ```typescript
-enum AngleKind {
+enum CoordinateType {
   LAT = "lat",  // Latitude
   LON = "lon"   // Longitude
 }
@@ -82,19 +82,19 @@ enum Hemisphere {
 }
 
 interface DD {
-  kind: AngleKind;
+  kind: CoordinateType;
   degrees: number;
 }
 
 interface DM {
-  kind: AngleKind;
+  kind: CoordinateType;
   degrees: number;
   minutes: number;
   hemi?: Hemisphere;
 }
 
 interface DMS {
-  kind: AngleKind;
+  kind: CoordinateType;
   degrees: number;
   minutes: number;
   seconds: number;
@@ -104,7 +104,7 @@ interface DMS {
 
 ### Parsing Functions
 
-#### `parseToDD(input: string | number, kind: AngleKind): DD`
+#### `parseToDD(input: string | number, kind: CoordinateType): DD`
 
 Parses various coordinate formats into Decimal Degrees.
 
@@ -118,10 +118,10 @@ Parses various coordinate formats into Decimal Degrees.
 **Examples:**
 
 ```typescript
-parseToDD("45.123", AngleKind.LAT)           // { kind: "lat", degrees: 45.123 }
-parseToDD("45° 7.38' N", AngleKind.LAT)      // { kind: "lat", degrees: 45.123 }
-parseToDD("45° 7' 22.8\" N", AngleKind.LAT)  // { kind: "lat", degrees: 45.123 }
-parseToDD("-122.4194", AngleKind.LON)         // { kind: "lon", degrees: -122.4194 }
+parseToDD("45.123", CoordinateType.LAT)           // { kind: "lat", degrees: 45.123 }
+parseToDD("45° 7.38' N", CoordinateType.LAT)      // { kind: "lat", degrees: 45.123 }
+parseToDD("45° 7' 22.8\" N", CoordinateType.LAT)  // { kind: "lat", degrees: 45.123 }
+parseToDD("-122.4194", CoordinateType.LON)         // { kind: "lon", degrees: -122.4194 }
 ```
 
 ### Conversion Functions
@@ -175,8 +175,8 @@ const [lat2, lon2] = parsePairToDD(48.8544, -123.5005);
 Converts a pair of Decimal Degrees to Degrees-Minutes format.
 
 ```typescript
-const latDD = { kind: AngleKind.LAT, degrees: 48.8544 };
-const lonDD = { kind: AngleKind.LON, degrees: -123.5005 };
+const latDD = { kind: CoordinateType.LAT, degrees: 48.8544 };
+const lonDD = { kind: CoordinateType.LON, degrees: -123.5005 };
 const [latDM, lonDM] = ddPairToDM(latDD, lonDD);
 // latDM: { kind: "lat", degrees: 48, minutes: 51.26, hemi: "N" }
 // lonDM: { kind: "lon", degrees: 123, minutes: 30.03, hemi: "W" }
@@ -197,8 +197,8 @@ const [latDMS, lonDMS] = ddPairToDMS(latDD, lonDD);
 Converts a pair of Degrees-Minutes back to Decimal Degrees format.
 
 ```typescript
-const latDM = { kind: AngleKind.LAT, degrees: 48, minutes: 51.26, hemi: Hemisphere.N };
-const lonDM = { kind: AngleKind.LON, degrees: 123, minutes: 30.03, hemi: Hemisphere.W };
+const latDM = { kind: CoordinateType.LAT, degrees: 48, minutes: 51.26, hemi: Hemisphere.N };
+const lonDM = { kind: CoordinateType.LON, degrees: 123, minutes: 30.03, hemi: Hemisphere.W };
 const [latDD, lonDD] = dmPairToDD(latDM, lonDM);
 // latDD: { kind: "lat", degrees: 48.8544 }
 // lonDD: { kind: "lon", degrees: -123.5005 }
@@ -209,8 +209,8 @@ const [latDD, lonDD] = dmPairToDD(latDM, lonDM);
 Converts a pair of Degrees-Minutes-Seconds back to Decimal Degrees format.
 
 ```typescript
-const latDMS = { kind: AngleKind.LAT, degrees: 48, minutes: 51, seconds: 15.84, hemi: Hemisphere.N };
-const lonDMS = { kind: AngleKind.LON, degrees: 123, minutes: 30, seconds: 1.8, hemi: Hemisphere.W };
+const latDMS = { kind: CoordinateType.LAT, degrees: 48, minutes: 51, seconds: 15.84, hemi: Hemisphere.N };
+const lonDMS = { kind: CoordinateType.LON, degrees: 123, minutes: 30, seconds: 1.8, hemi: Hemisphere.W };
 const [latDD, lonDD] = dmsPairToDD(latDMS, lonDMS);
 // latDD: { kind: "lat", degrees: 48.8544 }
 // lonDD: { kind: "lon", degrees: -123.5005 }
@@ -223,7 +223,7 @@ const [latDD, lonDD] = dmsPairToDD(latDMS, lonDMS);
 Formats Decimal Degrees as a readable string.
 
 ```typescript
-formatDD({ kind: AngleKind.LAT, degrees: 45.123 }, 3)
+formatDD({ kind: CoordinateType.LAT, degrees: 45.123 }, 3)
 // "45.123° N"
 ```
 
@@ -232,7 +232,7 @@ formatDD({ kind: AngleKind.LAT, degrees: 45.123 }, 3)
 Formats Degrees-Minutes as a readable string.
 
 ```typescript
-formatDM({ kind: AngleKind.LAT, degrees: 45, minutes: 7.38, hemi: Hemisphere.N })
+formatDM({ kind: CoordinateType.LAT, degrees: 45, minutes: 7.38, hemi: Hemisphere.N })
 // "45° 7.38' N"
 ```
 
@@ -241,7 +241,7 @@ formatDM({ kind: AngleKind.LAT, degrees: 45, minutes: 7.38, hemi: Hemisphere.N }
 Formats Degrees-Minutes-Seconds as a readable string.
 
 ```typescript
-formatDMS({ kind: AngleKind.LAT, degrees: 45, minutes: 7, seconds: 22.8, hemi: Hemisphere.N })
+formatDMS({ kind: CoordinateType.LAT, degrees: 45, minutes: 7, seconds: 22.8, hemi: Hemisphere.N })
 // "45° 7' 22.80" N"
 ```
 
@@ -252,8 +252,8 @@ formatDMS({ kind: AngleKind.LAT, degrees: 45, minutes: 7, seconds: 22.8, hemi: H
 Formats a pair of Decimal Degrees as human-readable strings.
 
 ```typescript
-const latDD = { kind: AngleKind.LAT, degrees: 48.8544 };
-const lonDD = { kind: AngleKind.LON, degrees: -123.5005 };
+const latDD = { kind: CoordinateType.LAT, degrees: 48.8544 };
+const lonDD = { kind: CoordinateType.LON, degrees: -123.5005 };
 const [latStr, lonStr] = formatDDPair(latDD, lonDD);
 // latStr: "48.85440° N"
 // lonStr: "123.50050° W"
@@ -264,8 +264,8 @@ const [latStr, lonStr] = formatDDPair(latDD, lonDD);
 Formats a pair of Degrees-Minutes as human-readable strings.
 
 ```typescript
-const latDM = { kind: AngleKind.LAT, degrees: 48, minutes: 51.26, hemi: Hemisphere.N };
-const lonDM = { kind: AngleKind.LON, degrees: 123, minutes: 30.03, hemi: Hemisphere.W };
+const latDM = { kind: CoordinateType.LAT, degrees: 48, minutes: 51.26, hemi: Hemisphere.N };
+const lonDM = { kind: CoordinateType.LON, degrees: 123, minutes: 30.03, hemi: Hemisphere.W };
 const [latStr, lonStr] = formatDMPair(latDM, lonDM);
 // latStr: "48° 51.26' N"
 // lonStr: "123° 30.03' W"
@@ -276,8 +276,8 @@ const [latStr, lonStr] = formatDMPair(latDM, lonDM);
 Formats a pair of Degrees-Minutes-Seconds as human-readable strings.
 
 ```typescript
-const latDMS = { kind: AngleKind.LAT, degrees: 48, minutes: 51, seconds: 15.84, hemi: Hemisphere.N };
-const lonDMS = { kind: AngleKind.LON, degrees: 123, minutes: 30, seconds: 1.8, hemi: Hemisphere.W };
+const latDMS = { kind: CoordinateType.LAT, degrees: 48, minutes: 51, seconds: 15.84, hemi: Hemisphere.N };
+const lonDMS = { kind: CoordinateType.LON, degrees: 123, minutes: 30, seconds: 1.8, hemi: Hemisphere.W };
 const [latStr, lonStr] = formatDMSPair(latDMS, lonDMS);
 // latStr: "48° 51' 15.84" N"
 // lonStr: "123° 30' 1.80" W"
@@ -285,13 +285,13 @@ const [latStr, lonStr] = formatDMSPair(latDMS, lonDMS);
 
 ### Utility Functions
 
-#### `detectKindFromHemi(hemi: Hemisphere): AngleKind`
+#### `detectKindFromHemi(hemi: Hemisphere): CoordinateType`
 
 Determines coordinate type from hemisphere indicator.
 
 ```typescript
-detectKindFromHemi(Hemisphere.N)  // AngleKind.LAT
-detectKindFromHemi(Hemisphere.E)  // AngleKind.LON
+detectKindFromHemi(Hemisphere.N)  // CoordinateType.LAT
+detectKindFromHemi(Hemisphere.E)  // CoordinateType.LON
 ```
 
 ## Validation and Error Handling
@@ -307,13 +307,13 @@ The library includes comprehensive validation:
 
 ```typescript
 // Range errors
-parseToDD("91", AngleKind.LAT)  // Error: LAT degrees out of range: 91
+parseToDD("91", CoordinateType.LAT)  // Error: LAT degrees out of range: 91
 
 // Format errors
-parseToDD("45° 65' N", AngleKind.LAT)  // Error: Minutes must be < 60
+parseToDD("45° 65' N", CoordinateType.LAT)  // Error: Minutes must be < 60
 
 // Invalid input
-parseToDD("invalid", AngleKind.LAT)  // Error: Unrecognized coordinate format
+parseToDD("invalid", CoordinateType.LAT)  // Error: Unrecognized coordinate format
 ```
 
 ## Advanced Usage
@@ -321,7 +321,7 @@ parseToDD("invalid", AngleKind.LAT)  // Error: Unrecognized coordinate format
 ### Custom Precision
 
 ```typescript
-const dd = { kind: AngleKind.LAT, degrees: 45.123456789 };
+const dd = { kind: CoordinateType.LAT, degrees: 45.123456789 };
 
 // High precision DM
 const dm = ddToDM(dd, { decimals: 4 });
@@ -335,7 +335,7 @@ console.log(formatDMS(dms)); // "45° 7' 24.444" N"
 ### Clamping Values
 
 ```typescript
-const invalidLat = { kind: AngleKind.LAT, degrees: 95 };
+const invalidLat = { kind: CoordinateType.LAT, degrees: 95 };
 
 // Clamp to valid range
 const clampedDM = ddToDM(invalidLat, { clamp: true });
@@ -353,7 +353,7 @@ const coordinates = [
 ];
 
 const parsed = coordinates.map((coord, index) => 
-  parseToDD(coord, index % 2 === 0 ? AngleKind.LAT : AngleKind.LON)
+  parseToDD(coord, index % 2 === 0 ? CoordinateType.LAT : CoordinateType.LON)
 );
 ```
 

@@ -1,4 +1,4 @@
-import { AngleKind, Hemisphere } from "../types";
+import { CoordinateType, Hemisphere } from "../types";
 import { DEG_MAX } from "../data";
 
 
@@ -13,14 +13,14 @@ import { DEG_MAX } from "../data";
  * 
  * @example
  * ```typescript
- * dirFromSign(AngleKind.LAT, 45.123)   // Hemisphere.N
- * dirFromSign(AngleKind.LAT, -45.123)  // Hemisphere.S
- * dirFromSign(AngleKind.LON, 122.419)  // Hemisphere.E
- * dirFromSign(AngleKind.LON, -122.419) // Hemisphere.W
+ * dirFromSign(CoordinateType.LAT, 45.123)   // Hemisphere.N
+ * dirFromSign(CoordinateType.LAT, -45.123)  // Hemisphere.S
+ * dirFromSign(CoordinateType.LON, 122.419)  // Hemisphere.E
+ * dirFromSign(CoordinateType.LON, -122.419) // Hemisphere.W
  * ```
  */
-export function dirFromSign(kind: AngleKind, value: number): Hemisphere {
-  if (kind === AngleKind.LAT) return value >= 0 ? Hemisphere.N : Hemisphere.S;
+export function dirFromSign(kind: CoordinateType, value: number): Hemisphere {
+  if (kind === CoordinateType.LAT) return value >= 0 ? Hemisphere.N : Hemisphere.S;
   return value >= 0 ? Hemisphere.E : Hemisphere.W;
 }
 
@@ -61,14 +61,14 @@ export function applyHemiToSign(value: number, hemi?: Hemisphere): number {
  * 
  * @example
  * ```typescript
- * clampDegrees(AngleKind.LAT, 95)   // 90 (clamped to max latitude)
- * clampDegrees(AngleKind.LAT, -95)  // -90 (clamped to min latitude)
- * clampDegrees(AngleKind.LON, 185)  // 180 (clamped to max longitude)
- * clampDegrees(AngleKind.LON, -185) // -180 (clamped to min longitude)
- * clampDegrees(AngleKind.LAT, 45)   // 45 (already valid)
+ * clampDegrees(CoordinateType.LAT, 95)   // 90 (clamped to max latitude)
+ * clampDegrees(CoordinateType.LAT, -95)  // -90 (clamped to min latitude)
+ * clampDegrees(CoordinateType.LON, 185)  // 180 (clamped to max longitude)
+ * clampDegrees(CoordinateType.LON, -185) // -180 (clamped to min longitude)
+ * clampDegrees(CoordinateType.LAT, 45)   // 45 (already valid)
  * ```
  */
-export function clampDegrees(kind: AngleKind, deg: number): number {
+export function clampDegrees(kind: CoordinateType, deg: number): number {
   const max = DEG_MAX[kind];
   if (deg > max) return max;
   if (deg < -max) return -max;
@@ -116,13 +116,13 @@ export function ensureFinite(n: unknown, label = "number"): number {
  * 
  * @example
  * ```typescript
- * validateRange(AngleKind.LAT, 45)   // OK (valid latitude)
- * validateRange(AngleKind.LON, 122)   // OK (valid longitude)
- * validateRange(AngleKind.LAT, 95)    // throws Error: lat degrees out of range: 95
- * validateRange(AngleKind.LON, 185)    // throws Error: lon degrees out of range: 185
+ * validateRange(CoordinateType.LAT, 45)   // OK (valid latitude)
+ * validateRange(CoordinateType.LON, 122)   // OK (valid longitude)
+ * validateRange(CoordinateType.LAT, 95)    // throws Error: lat degrees out of range: 95
+ * validateRange(CoordinateType.LON, 185)    // throws Error: lon degrees out of range: 185
  * ```
  */
-export function validateRange(kind: AngleKind, deg: number) {
+export function validateRange(kind: CoordinateType, deg: number) {
   const max = DEG_MAX[kind];
   if (deg < -max || deg > max)
     throw new Error(`${kind} degrees out of range: ${deg}`);

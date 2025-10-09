@@ -11,7 +11,7 @@ import { PRECISION_DEFAULTS } from "../data";
  *
  * @example
  * ```typescript
- * const dm = { kind: AngleKind.LAT, degrees: 45, minutes: 7.38, hemi: Hemisphere.N };
+ * const dm = { kind: CoordinateType.LAT, degrees: 45, minutes: 7.38, hemi: Hemisphere.N };
  * formatDM(dm);        // "45° 7.38' N"
  * formatDM(dm, 4);     // "45° 7.3800' N"
  * ```
@@ -30,7 +30,7 @@ export function formatDM(dm: DM, decimals = PRECISION_DEFAULTS.DM_DECIMALS): str
  *
  * @example
  * ```typescript
- * const dms = { kind: AngleKind.LAT, degrees: 45, minutes: 7, seconds: 22.8, hemi: Hemisphere.N };
+ * const dms = { kind: CoordinateType.LAT, degrees: 45, minutes: 7, seconds: 22.8, hemi: Hemisphere.N };
  * formatDMS(dms);      // "45° 7' 22.80\" N"
  * formatDMS(dms, 3);   // "45° 7' 22.800\" N"
  * ```
@@ -51,7 +51,7 @@ export function formatDMS(dms: DMS, decimals = PRECISION_DEFAULTS.DMS_DECIMALS):
  *
  * @example
  * ```typescript
- * const dd = { kind: AngleKind.LAT, degrees: 45.123 };
+ * const dd = { kind: CoordinateType.LAT, degrees: 45.123 };
  * formatDD(dd);        // "45.12300° N"
  * formatDD(dd, 3);    // "45.123° N"
  * ```
@@ -71,8 +71,8 @@ export function formatDD(dd: DD, decimals = PRECISION_DEFAULTS.DD_DECIMALS): str
  *
  * @example
  * ```typescript
- * const latDM = { kind: AngleKind.LAT, degrees: 48, minutes: 51.26, hemi: Hemisphere.N };
- * const lonDM = { kind: AngleKind.LON, degrees: 123, minutes: 30.03, hemi: Hemisphere.W };
+ * const latDM = { kind: CoordinateType.LAT, degrees: 48, minutes: 51.26, hemi: Hemisphere.N };
+ * const lonDM = { kind: CoordinateType.LON, degrees: 123, minutes: 30.03, hemi: Hemisphere.W };
  * const [latStr, lonStr] = formatDMPair(latDM, lonDM);
  * // latStr: "48° 51.26' N"
  * // lonStr: "123° 30.03' W"
@@ -98,8 +98,8 @@ export function formatDMPair(
  *
  * @example
  * ```typescript
- * const latDMS = { kind: AngleKind.LAT, degrees: 48, minutes: 51, seconds: 15.84, hemi: Hemisphere.N };
- * const lonDMS = { kind: AngleKind.LON, degrees: 123, minutes: 30, seconds: 1.8, hemi: Hemisphere.W };
+ * const latDMS = { kind: CoordinateType.LAT, degrees: 48, minutes: 51, seconds: 15.84, hemi: Hemisphere.N };
+ * const lonDMS = { kind: CoordinateType.LON, degrees: 123, minutes: 30, seconds: 1.8, hemi: Hemisphere.W };
  * const [latStr, lonStr] = formatDMSPair(latDMS, lonDMS);
  * // latStr: "48° 51' 15.84" N"
  * // lonStr: "123° 30' 1.80" W"
@@ -125,8 +125,8 @@ export function formatDMSPair(
  *
  * @example
  * ```typescript
- * const latDD = { kind: AngleKind.LAT, degrees: 48.8544 };
- * const lonDD = { kind: AngleKind.LON, degrees: -123.5005 };
+ * const latDD = { kind: CoordinateType.LAT, degrees: 48.8544 };
+ * const lonDD = { kind: CoordinateType.LON, degrees: -123.5005 };
  * const [latStr, lonStr] = formatDDPair(latDD, lonDD);
  * // latStr: "48.85440° N"
  * // lonStr: "123.50050° W"

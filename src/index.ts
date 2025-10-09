@@ -6,7 +6,7 @@ import {
   dirFromSign,
 } from "./helpers";
 import { DD, DM, DMS } from "../types";
-import { AngleKind, Hemisphere } from "../types";
+import { CoordinateType, Hemisphere } from "../types";
 import { CONVERSION_CONSTANTS, VALIDATION_LIMITS, ROLLOVER_THRESHOLDS, PRECISION_DEFAULTS } from "../data";
 
 
@@ -22,16 +22,16 @@ import { CONVERSION_CONSTANTS, VALIDATION_LIMITS, ROLLOVER_THRESHOLDS, PRECISION
  * 
  * @example
  * ```typescript
- * detectKindFromHemi(Hemisphere.N)  // AngleKind.LAT
- * detectKindFromHemi(Hemisphere.E)  // AngleKind.LON
- * detectKindFromHemi(Hemisphere.S)  // AngleKind.LAT
- * detectKindFromHemi(Hemisphere.W)  // AngleKind.LON
+ * detectKindFromHemi(Hemisphere.N)  // CoordinateType.LAT
+ * detectKindFromHemi(Hemisphere.E)  // CoordinateType.LON
+ * detectKindFromHemi(Hemisphere.S)  // CoordinateType.LAT
+ * detectKindFromHemi(Hemisphere.W)  // CoordinateType.LON
  * ```
  */
-export function detectKindFromHemi(hemi: Hemisphere): AngleKind {
+export function detectKindFromHemi(hemi: Hemisphere): CoordinateType {
   return hemi === Hemisphere.N || hemi === Hemisphere.S
-    ? AngleKind.LAT
-    : AngleKind.LON;
+    ? CoordinateType.LAT
+    : CoordinateType.LON;
 }
 
 /**
@@ -51,13 +51,13 @@ export function detectKindFromHemi(hemi: Hemisphere): AngleKind {
  * 
  * @example
  * ```typescript
- * parseToDD("45.123", AngleKind.LAT)           // { kind: "lat", degrees: 45.123 }
- * parseToDD("45° 7.38' N", AngleKind.LAT)      // { kind: "lat", degrees: 45.123 }
- * parseToDD("45° 7' 22.8\" N", AngleKind.LAT)  // { kind: "lat", degrees: 45.123 }
- * parseToDD("-122.4194", AngleKind.LON)         // { kind: "lon", degrees: -122.4194 }
+ * parseToDD("45.123", CoordinateType.LAT)           // { kind: "lat", degrees: 45.123 }
+ * parseToDD("45° 7.38' N", CoordinateType.LAT)      // { kind: "lat", degrees: 45.123 }
+ * parseToDD("45° 7' 22.8\" N", CoordinateType.LAT)  // { kind: "lat", degrees: 45.123 }
+ * parseToDD("-122.4194", CoordinateType.LON)         // { kind: "lon", degrees: -122.4194 }
  * ```
  */
-export function parseToDD(input: string | number, kind: AngleKind): DD {
+export function parseToDD(input: string | number, kind: CoordinateType): DD {
   if (
     typeof input === "number" ||
     (typeof input === "string" && /^[+-]?\d+(\.\d+)?$/.test(input.trim()))
@@ -125,7 +125,7 @@ export function parseToDD(input: string | number, kind: AngleKind): DD {
  * 
  * @example
  * ```typescript
- * const dd = { kind: AngleKind.LAT, degrees: 45.123 };
+ * const dd = { kind: CoordinateType.LAT, degrees: 45.123 };
  * const dm = ddToDM(dd);
  * // { kind: "lat", degrees: 45, minutes: 7.38, hemi: "N" }
  * 
@@ -174,7 +174,7 @@ export function ddToDM(
  * 
  * @example
  * ```typescript
- * const dd = { kind: AngleKind.LAT, degrees: 45.123 };
+ * const dd = { kind: CoordinateType.LAT, degrees: 45.123 };
  * const dms = ddToDMS(dd);
  * // { kind: "lat", degrees: 45, minutes: 7, seconds: 22.80, hemi: "N" }
  * 
@@ -225,7 +225,7 @@ export function ddToDMS(
  * 
  * @example
  * ```typescript
- * const dm = { kind: AngleKind.LAT, degrees: 45, minutes: 7.38, hemi: Hemisphere.N };
+ * const dm = { kind: CoordinateType.LAT, degrees: 45, minutes: 7.38, hemi: Hemisphere.N };
  * const dd = dmToDD(dm);
  * // { kind: "lat", degrees: 45.123 }
  * ```
@@ -249,7 +249,7 @@ export function dmToDD(dm: DM): DD {
  * 
  * @example
  * ```typescript
- * const dms = { kind: AngleKind.LAT, degrees: 45, minutes: 7, seconds: 22.8, hemi: Hemisphere.N };
+ * const dms = { kind: CoordinateType.LAT, degrees: 45, minutes: 7, seconds: 22.8, hemi: Hemisphere.N };
  * const dd = dmsToDD(dms);
  * // { kind: "lat", degrees: 45.123 }
  * ```
@@ -294,8 +294,8 @@ export function dmsToDD(dms: DMS): DD {
  * ```
  */
 export function parsePairToDD(latInput: string | number, lonInput: string | number): [DD, DD] {
-  const lat = parseToDD(latInput, AngleKind.LAT);
-  const lon = parseToDD(lonInput, AngleKind.LON);
+  const lat = parseToDD(latInput, CoordinateType.LAT);
+  const lon = parseToDD(lonInput, CoordinateType.LON);
   return [lat, lon];
 }
 
@@ -311,8 +311,8 @@ export function parsePairToDD(latInput: string | number, lonInput: string | numb
  * 
  * @example
  * ```typescript
- * const latDD = { kind: AngleKind.LAT, degrees: 48.8544 };
- * const lonDD = { kind: AngleKind.LON, degrees: -123.5005 };
+ * const latDD = { kind: CoordinateType.LAT, degrees: 48.8544 };
+ * const lonDD = { kind: CoordinateType.LON, degrees: -123.5005 };
  * const [latDM, lonDM] = ddPairToDM(latDD, lonDD);
  * // latDM: { kind: "lat", degrees: 48, minutes: 51.26, hemi: "N" }
  * // lonDM: { kind: "lon", degrees: 123, minutes: 30.03, hemi: "W" }
@@ -340,8 +340,8 @@ export function ddPairToDM(
  * 
  * @example
  * ```typescript
- * const latDD = { kind: AngleKind.LAT, degrees: 48.8544 };
- * const lonDD = { kind: AngleKind.LON, degrees: -123.5005 };
+ * const latDD = { kind: CoordinateType.LAT, degrees: 48.8544 };
+ * const lonDD = { kind: CoordinateType.LON, degrees: -123.5005 };
  * const [latDMS, lonDMS] = ddPairToDMS(latDD, lonDD);
  * // latDMS: { kind: "lat", degrees: 48, minutes: 51, seconds: 15.84, hemi: "N" }
  * // lonDMS: { kind: "lon", degrees: 123, minutes: 30, seconds: 1.8, hemi: "W" }
@@ -368,8 +368,8 @@ export function ddPairToDMS(
  * 
  * @example
  * ```typescript
- * const latDM = { kind: AngleKind.LAT, degrees: 48, minutes: 51.26, hemi: Hemisphere.N };
- * const lonDM = { kind: AngleKind.LON, degrees: 123, minutes: 30.03, hemi: Hemisphere.W };
+ * const latDM = { kind: CoordinateType.LAT, degrees: 48, minutes: 51.26, hemi: Hemisphere.N };
+ * const lonDM = { kind: CoordinateType.LON, degrees: 123, minutes: 30.03, hemi: Hemisphere.W };
  * const [latDD, lonDD] = dmPairToDD(latDM, lonDM);
  * // latDD: { kind: "lat", degrees: 48.8544 }
  * // lonDD: { kind: "lon", degrees: -123.5005 }
@@ -392,8 +392,8 @@ export function dmPairToDD(latDM: DM, lonDM: DM): [DD, DD] {
  * 
  * @example
  * ```typescript
- * const latDMS = { kind: AngleKind.LAT, degrees: 48, minutes: 51, seconds: 15.84, hemi: Hemisphere.N };
- * const lonDMS = { kind: AngleKind.LON, degrees: 123, minutes: 30, seconds: 1.8, hemi: Hemisphere.W };
+ * const latDMS = { kind: CoordinateType.LAT, degrees: 48, minutes: 51, seconds: 15.84, hemi: Hemisphere.N };
+ * const lonDMS = { kind: CoordinateType.LON, degrees: 123, minutes: 30, seconds: 1.8, hemi: Hemisphere.W };
  * const [latDD, lonDD] = dmsPairToDD(latDMS, lonDMS);
  * // latDD: { kind: "lat", degrees: 48.8544 }
  * // lonDD: { kind: "lon", degrees: -123.5005 }
