@@ -78,7 +78,10 @@ enum CoordinateType {
 }
 
 enum Hemisphere {
-  N = "N", S = "S", E = "E", W = "W"
+  N = "N", 
+  S = "S", 
+  E = "E", 
+  W = "W"
 }
 
 interface DD {
