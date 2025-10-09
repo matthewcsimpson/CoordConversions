@@ -1,6 +1,6 @@
 {
   "name": "@mcs/coordconversion",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "description": "Convert between DD, DM, and DMS with robust parsing and formatting.",
   "license": "MIT",
   "author": "Matthew Simpson",
