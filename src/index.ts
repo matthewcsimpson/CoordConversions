@@ -1,46 +1,60 @@
+import {
+  ensureFinite,
+  validateRange,
+  applyHemiToSign,
+  clampDegrees,
+  dirFromSign,
+} from "./helpers";
 import { AngleKind, Hemisphere, DD, DM, DMS } from "../types";
-import { DEG_MAX } from "../data";
 
 
+// ============================================================================
+// BASIC FUNCTIONS - Functions that work with single coordinates
+// ============================================================================
 
-
+/**
+ * Determines the coordinate type (latitude or longitude) from a hemisphere indicator.
+ * 
+ * @param hemi - The hemisphere indicator (N, S, E, or W)
+ * @returns The corresponding coordinate type - LAT for N/S, LON for E/W
+ * 
+ * @example
+ * ```typescript
+ * detectKindFromHemi(Hemisphere.N)  // AngleKind.LAT
+ * detectKindFromHemi(Hemisphere.E)  // AngleKind.LON
+ * detectKindFromHemi(Hemisphere.S)  // AngleKind.LAT
+ * detectKindFromHemi(Hemisphere.W)  // AngleKind.LON
+ * ```
+ */
 export function detectKindFromHemi(hemi: Hemisphere): AngleKind {
   return hemi === Hemisphere.N || hemi === Hemisphere.S
     ? AngleKind.LAT
     : AngleKind.LON;
 }
 
-function dirFromSign(kind: AngleKind, value: number): Hemisphere {
-  if (kind === AngleKind.LAT) return value >= 0 ? Hemisphere.N : Hemisphere.S;
-  return value >= 0 ? Hemisphere.E : Hemisphere.W;
-}
-
-function applyHemiToSign(value: number, hemi?: Hemisphere): number {
-  if (!hemi) return value;
-  if (hemi === Hemisphere.S || hemi === Hemisphere.W) return -Math.abs(value);
-  return Math.abs(value);
-}
-
-function clampDegrees(kind: AngleKind, deg: number): number {
-  const max = DEG_MAX[kind];
-  if (deg > max) return max;
-  if (deg < -max) return -max;
-  return deg;
-}
-
-function ensureFinite(n: unknown, label = "number"): number {
-  const v = typeof n === "string" ? Number(n.trim()) : (n as number);
-  if (!Number.isFinite(v)) throw new Error(`Invalid ${label}`);
-  return v;
-}
-
-function validateRange(kind: AngleKind, deg: number) {
-  const max = DEG_MAX[kind];
-  if (deg < -max || deg > max)
-    throw new Error(`${kind} degrees out of range: ${deg}`);
-}
-
-/** Parse string/number → DD */
+/**
+ * Parses various coordinate formats into Decimal Degrees (DD) format.
+ * 
+ * Supports multiple input formats:
+ * - Decimal degrees: `"45.123"`, `45.123`
+ * - Degrees-minutes: `"45° 7.38'"`, `"45 7.38 N"`
+ * - Degrees-minutes-seconds: `"45° 7' 22.8\" N"`, `"45 7 22.8"`
+ * - With hemisphere indicators: `"N"`, `"S"`, `"E"`, `"W"`
+ * 
+ * @param input - The coordinate string or number to parse
+ * @param kind - The coordinate type (latitude or longitude) for validation
+ * @returns A DD object with the parsed decimal degrees
+ * 
+ * @throws {Error} When the input format is unrecognized or values are out of range
+ * 
+ * @example
+ * ```typescript
+ * parseToDD("45.123", AngleKind.LAT)           // { kind: "lat", degrees: 45.123 }
+ * parseToDD("45° 7.38' N", AngleKind.LAT)      // { kind: "lat", degrees: 45.123 }
+ * parseToDD("45° 7' 22.8\" N", AngleKind.LAT)  // { kind: "lat", degrees: 45.123 }
+ * parseToDD("-122.4194", AngleKind.LON)         // { kind: "lon", degrees: -122.4194 }
+ * ```
+ */
 export function parseToDD(input: string | number, kind: AngleKind): DD {
   if (
     typeof input === "number" ||
@@ -98,7 +112,26 @@ export function parseToDD(input: string | number, kind: AngleKind): DD {
   throw new Error("Unrecognized coordinate format");
 }
 
-/** DD → DM */
+/**
+ * Converts Decimal Degrees (DD) to Degrees-Minutes (DM) format.
+ * 
+ * @param dd - The decimal degrees object to convert
+ * @param opts - Optional conversion options
+ * @param opts.decimals - Number of decimal places for minutes (default: 2)
+ * @param opts.clamp - Whether to clamp degrees to valid ranges (default: false)
+ * @returns A DM object with degrees, minutes, and hemisphere
+ * 
+ * @example
+ * ```typescript
+ * const dd = { kind: AngleKind.LAT, degrees: 45.123 };
+ * const dm = ddToDM(dd);
+ * // { kind: "lat", degrees: 45, minutes: 7.38, hemi: "N" }
+ * 
+ * // With custom precision
+ * const dmPrecise = ddToDM(dd, { decimals: 4 });
+ * // { kind: "lat", degrees: 45, minutes: 7.3800, hemi: "N" }
+ * ```
+ */
 export function ddToDM(
   dd: DD,
   opts?: { decimals?: number; clamp?: boolean }
@@ -128,7 +161,26 @@ export function ddToDM(
   };
 }
 
-/** DD → DMS */
+/**
+ * Converts Decimal Degrees (DD) to Degrees-Minutes-Seconds (DMS) format.
+ * 
+ * @param dd - The decimal degrees object to convert
+ * @param opts - Optional conversion options
+ * @param opts.decimals - Number of decimal places for seconds (default: 2)
+ * @param opts.clamp - Whether to clamp degrees to valid ranges (default: false)
+ * @returns A DMS object with degrees, minutes, seconds, and hemisphere
+ * 
+ * @example
+ * ```typescript
+ * const dd = { kind: AngleKind.LAT, degrees: 45.123 };
+ * const dms = ddToDMS(dd);
+ * // { kind: "lat", degrees: 45, minutes: 7, seconds: 22.80, hemi: "N" }
+ * 
+ * // With custom precision
+ * const dmsPrecise = ddToDMS(dd, { decimals: 3 });
+ * // { kind: "lat", degrees: 45, minutes: 7, seconds: 22.800, hemi: "N" }
+ * ```
+ */
 export function ddToDMS(
   dd: DD,
   opts?: { decimals?: number; clamp?: boolean }
@@ -161,7 +213,21 @@ export function ddToDMS(
   };
 }
 
-/** DM → DD */
+/**
+ * Converts Degrees-Minutes (DM) format back to Decimal Degrees (DD).
+ * 
+ * @param dm - The degrees-minutes object to convert
+ * @returns A DD object with decimal degrees
+ * 
+ * @throws {Error} When minutes are out of valid range [0, 60)
+ * 
+ * @example
+ * ```typescript
+ * const dm = { kind: AngleKind.LAT, degrees: 45, minutes: 7.38, hemi: Hemisphere.N };
+ * const dd = dmToDD(dm);
+ * // { kind: "lat", degrees: 45.123 }
+ * ```
+ */
 export function dmToDD(dm: DM): DD {
   if (dm.minutes < 0 || dm.minutes >= 60)
     throw new Error("Minutes must be in [0, 60)");
@@ -171,7 +237,21 @@ export function dmToDD(dm: DM): DD {
   return { kind: dm.kind, degrees: signed };
 }
 
-/** DMS → DD */
+/**
+ * Converts Degrees-Minutes-Seconds (DMS) format back to Decimal Degrees (DD).
+ * 
+ * @param dms - The degrees-minutes-seconds object to convert
+ * @returns A DD object with decimal degrees
+ * 
+ * @throws {Error} When minutes or seconds are out of valid range [0, 60)
+ * 
+ * @example
+ * ```typescript
+ * const dms = { kind: AngleKind.LAT, degrees: 45, minutes: 7, seconds: 22.8, hemi: Hemisphere.N };
+ * const dd = dmsToDD(dms);
+ * // { kind: "lat", degrees: 45.123 }
+ * ```
+ */
 export function dmsToDD(dms: DMS): DD {
   if (dms.minutes < 0 || dms.minutes >= 60)
     throw new Error("Minutes must be in [0, 60)");
@@ -183,20 +263,146 @@ export function dmsToDD(dms: DMS): DD {
   return { kind: dms.kind, degrees: signed };
 }
 
-/** Formatters */
-export function formatDM(dm: DM, decimals = 2): string {
-  const hemi = dm.hemi ?? dirFromSign(dm.kind, dm.degrees);
-  return `${Math.abs(dm.degrees)}° ${dm.minutes.toFixed(decimals)}' ${hemi}`;
+
+// ============================================================================
+// PAIR FUNCTIONS - Functions that work with coordinate pairs
+// ============================================================================
+
+/**
+ * Parses a pair of coordinate strings/numbers into Decimal Degrees (DD) format.
+ * 
+ * Accepts latitude and longitude in various formats and returns a pair of DD objects.
+ * The first parameter is always treated as latitude, the second as longitude.
+ * 
+ * @param latInput - The latitude coordinate (string or number)
+ * @param lonInput - The longitude coordinate (string or number)
+ * @returns A tuple of DD objects [latitude, longitude]
+ * 
+ * @throws {Error} When either coordinate format is unrecognized or values are out of range
+ * 
+ * @example
+ * ```typescript
+ * const [lat, lon] = parsePairToDD("48.8544° N", "123.5005° W");
+ * // lat: { kind: "lat", degrees: 48.8544 }
+ * // lon: { kind: "lon", degrees: -123.5005 }
+ * 
+ * const [lat2, lon2] = parsePairToDD(48.8544, -123.5005);
+ * // lat2: { kind: "lat", degrees: 48.8544 }
+ * // lon2: { kind: "lon", degrees: -123.5005 }
+ * ```
+ */
+export function parsePairToDD(latInput: string | number, lonInput: string | number): [DD, DD] {
+  const lat = parseToDD(latInput, AngleKind.LAT);
+  const lon = parseToDD(lonInput, AngleKind.LON);
+  return [lat, lon];
 }
 
-export function formatDMS(dms: DMS, decimals = 2): string {
-  const hemi = dms.hemi ?? dirFromSign(dms.kind, dms.degrees);
-  return `${Math.abs(dms.degrees)}° ${dms.minutes}' ${dms.seconds.toFixed(
-    decimals
-  )}" ${hemi}`;
+/**
+ * Converts a pair of Decimal Degrees (DD) to Degrees-Minutes (DM) format.
+ * 
+ * @param latDD - The latitude DD object
+ * @param lonDD - The longitude DD object
+ * @param opts - Optional conversion options
+ * @param opts.decimals - Number of decimal places for minutes (default: 2)
+ * @param opts.clamp - Whether to clamp degrees to valid ranges (default: false)
+ * @returns A tuple of DM objects [latitude, longitude]
+ * 
+ * @example
+ * ```typescript
+ * const latDD = { kind: AngleKind.LAT, degrees: 48.8544 };
+ * const lonDD = { kind: AngleKind.LON, degrees: -123.5005 };
+ * const [latDM, lonDM] = ddPairToDM(latDD, lonDD);
+ * // latDM: { kind: "lat", degrees: 48, minutes: 51.26, hemi: "N" }
+ * // lonDM: { kind: "lon", degrees: 123, minutes: 30.03, hemi: "W" }
+ * ```
+ */
+export function ddPairToDM(
+  latDD: DD, 
+  lonDD: DD, 
+  opts?: { decimals?: number; clamp?: boolean }
+): [DM, DM] {
+  const latDM = ddToDM(latDD, opts);
+  const lonDM = ddToDM(lonDD, opts);
+  return [latDM, lonDM];
 }
 
-export function formatDD(dd: DD, decimals = 5): string {
-  const hemi = dirFromSign(dd.kind, dd.degrees);
-  return `${Math.abs(dd.degrees).toFixed(decimals)}° ${hemi}`;
+/**
+ * Converts a pair of Decimal Degrees (DD) to Degrees-Minutes-Seconds (DMS) format.
+ * 
+ * @param latDD - The latitude DD object
+ * @param lonDD - The longitude DD object
+ * @param opts - Optional conversion options
+ * @param opts.decimals - Number of decimal places for seconds (default: 2)
+ * @param opts.clamp - Whether to clamp degrees to valid ranges (default: false)
+ * @returns A tuple of DMS objects [latitude, longitude]
+ * 
+ * @example
+ * ```typescript
+ * const latDD = { kind: AngleKind.LAT, degrees: 48.8544 };
+ * const lonDD = { kind: AngleKind.LON, degrees: -123.5005 };
+ * const [latDMS, lonDMS] = ddPairToDMS(latDD, lonDD);
+ * // latDMS: { kind: "lat", degrees: 48, minutes: 51, seconds: 15.84, hemi: "N" }
+ * // lonDMS: { kind: "lon", degrees: 123, minutes: 30, seconds: 1.8, hemi: "W" }
+ * ```
+ */
+export function ddPairToDMS(
+  latDD: DD, 
+  lonDD: DD, 
+  opts?: { decimals?: number; clamp?: boolean }
+): [DMS, DMS] {
+  const latDMS = ddToDMS(latDD, opts);
+  const lonDMS = ddToDMS(lonDD, opts);
+  return [latDMS, lonDMS];
 }
+
+/**
+ * Converts a pair of Degrees-Minutes (DM) back to Decimal Degrees (DD) format.
+ * 
+ * @param latDM - The latitude DM object
+ * @param lonDM - The longitude DM object
+ * @returns A tuple of DD objects [latitude, longitude]
+ * 
+ * @throws {Error} When minutes are out of valid range [0, 60) for either coordinate
+ * 
+ * @example
+ * ```typescript
+ * const latDM = { kind: AngleKind.LAT, degrees: 48, minutes: 51.26, hemi: Hemisphere.N };
+ * const lonDM = { kind: AngleKind.LON, degrees: 123, minutes: 30.03, hemi: Hemisphere.W };
+ * const [latDD, lonDD] = dmPairToDD(latDM, lonDM);
+ * // latDD: { kind: "lat", degrees: 48.8544 }
+ * // lonDD: { kind: "lon", degrees: -123.5005 }
+ * ```
+ */
+export function dmPairToDD(latDM: DM, lonDM: DM): [DD, DD] {
+  const latDD = dmToDD(latDM);
+  const lonDD = dmToDD(lonDM);
+  return [latDD, lonDD];
+}
+
+/**
+ * Converts a pair of Degrees-Minutes-Seconds (DMS) back to Decimal Degrees (DD) format.
+ * 
+ * @param latDMS - The latitude DMS object
+ * @param lonDMS - The longitude DMS object
+ * @returns A tuple of DD objects [latitude, longitude]
+ * 
+ * @throws {Error} When minutes or seconds are out of valid range [0, 60) for either coordinate
+ * 
+ * @example
+ * ```typescript
+ * const latDMS = { kind: AngleKind.LAT, degrees: 48, minutes: 51, seconds: 15.84, hemi: Hemisphere.N };
+ * const lonDMS = { kind: AngleKind.LON, degrees: 123, minutes: 30, seconds: 1.8, hemi: Hemisphere.W };
+ * const [latDD, lonDD] = dmsPairToDD(latDMS, lonDMS);
+ * // latDD: { kind: "lat", degrees: 48.8544 }
+ * // lonDD: { kind: "lon", degrees: -123.5005 }
+ * ```
+ */
+export function dmsPairToDD(latDMS: DMS, lonDMS: DMS): [DD, DD] {
+  const latDD = dmsToDD(latDMS);
+  const lonDD = dmsToDD(lonDMS);
+  return [latDD, lonDD];
+}
+
+// Re-export formatting functions from formatters module
+export { formatDM, formatDMS, formatDD, formatDMPair, formatDMSPair, formatDDPair } from "./formatters";
+

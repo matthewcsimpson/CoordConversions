@@ -9,6 +9,8 @@ A robust TypeScript library for converting between different geographic coordina
 - ✅ **Robust Validation**: Range checking and format validation
 - 🎯 **Type Safety**: Full TypeScript support with comprehensive type definitions
 - 📐 **Precision Control**: Configurable decimal precision for output formatting
+- 🤝 **Pair Functions**: Work with latitude/longitude pairs together
+- 🎨 **Rich Formatting**: Multiple formatting options for all coordinate types
 - 🧪 **Well Tested**: Comprehensive test suite with round-trip validation
 - 📦 **Zero Dependencies**: Lightweight with no external dependencies
 - 🚀 **Modern Build**: ES modules and CommonJS support
@@ -31,21 +33,38 @@ import {
   formatDM, 
   formatDMS, 
   formatDD,
+  parsePairToDD,
+  ddPairToDM,
+  ddPairToDMS,
+  formatDMPair,
+  formatDMSPair,
+  formatDDPair,
   AngleKind 
 } from '@mcs/coordconversion';
 
-// Parse various coordinate formats
+// Parse individual coordinates
 const lat = parseToDD(`48° 51' 23.76" N`, AngleKind.LAT);
 const lon = parseToDD('2.3522', AngleKind.LON);
+
+// Parse coordinate pairs
+const [latPair, lonPair] = parsePairToDD('48.8544° N', '123.5005° W');
 
 // Convert between formats
 const dm = ddToDM(lat);
 const dms = ddToDMS(lon);
 
+// Convert pairs
+const [latDM, lonDM] = ddPairToDM(latPair, lonPair);
+const [latDMS, lonDMS] = ddPairToDMS(latPair, lonPair);
+
 // Format for display
 console.log(formatDM(dm));   // "48° 51.40' N"
 console.log(formatDMS(dms)); // "2° 21' 7.92" E"
 console.log(formatDD(lat));  // "48.85660° N"
+
+// Format pairs
+const [latStr, lonStr] = formatDMPair(latDM, lonDM);
+console.log(latStr, lonStr); // "48° 51.26' N" "123° 30.03' W"
 ```
 
 ## API Reference
@@ -133,6 +152,70 @@ Converts Degrees-Minutes back to Decimal Degrees.
 
 Converts Degrees-Minutes-Seconds back to Decimal Degrees.
 
+### Pair Functions
+
+#### `parsePairToDD(latInput: string | number, lonInput: string | number): [DD, DD]`
+
+Parses a pair of coordinate strings/numbers into Decimal Degrees format.
+
+```typescript
+// Parse coordinate pairs
+const [lat, lon] = parsePairToDD('48.8544° N', '123.5005° W');
+// lat: { kind: "lat", degrees: 48.8544 }
+// lon: { kind: "lon", degrees: -123.5005 }
+
+// Parse numeric pairs
+const [lat2, lon2] = parsePairToDD(48.8544, -123.5005);
+// lat2: { kind: "lat", degrees: 48.8544 }
+// lon2: { kind: "lon", degrees: -123.5005 }
+```
+
+#### `ddPairToDM(latDD: DD, lonDD: DD, opts?: { decimals?: number; clamp?: boolean }): [DM, DM]`
+
+Converts a pair of Decimal Degrees to Degrees-Minutes format.
+
+```typescript
+const latDD = { kind: AngleKind.LAT, degrees: 48.8544 };
+const lonDD = { kind: AngleKind.LON, degrees: -123.5005 };
+const [latDM, lonDM] = ddPairToDM(latDD, lonDD);
+// latDM: { kind: "lat", degrees: 48, minutes: 51.26, hemi: "N" }
+// lonDM: { kind: "lon", degrees: 123, minutes: 30.03, hemi: "W" }
+```
+
+#### `ddPairToDMS(latDD: DD, lonDD: DD, opts?: { decimals?: number; clamp?: boolean }): [DMS, DMS]`
+
+Converts a pair of Decimal Degrees to Degrees-Minutes-Seconds format.
+
+```typescript
+const [latDMS, lonDMS] = ddPairToDMS(latDD, lonDD);
+// latDMS: { kind: "lat", degrees: 48, minutes: 51, seconds: 15.84, hemi: "N" }
+// lonDMS: { kind: "lon", degrees: 123, minutes: 30, seconds: 1.8, hemi: "W" }
+```
+
+#### `dmPairToDD(latDM: DM, lonDM: DM): [DD, DD]`
+
+Converts a pair of Degrees-Minutes back to Decimal Degrees format.
+
+```typescript
+const latDM = { kind: AngleKind.LAT, degrees: 48, minutes: 51.26, hemi: Hemisphere.N };
+const lonDM = { kind: AngleKind.LON, degrees: 123, minutes: 30.03, hemi: Hemisphere.W };
+const [latDD, lonDD] = dmPairToDD(latDM, lonDM);
+// latDD: { kind: "lat", degrees: 48.8544 }
+// lonDD: { kind: "lon", degrees: -123.5005 }
+```
+
+#### `dmsPairToDD(latDMS: DMS, lonDMS: DMS): [DD, DD]`
+
+Converts a pair of Degrees-Minutes-Seconds back to Decimal Degrees format.
+
+```typescript
+const latDMS = { kind: AngleKind.LAT, degrees: 48, minutes: 51, seconds: 15.84, hemi: Hemisphere.N };
+const lonDMS = { kind: AngleKind.LON, degrees: 123, minutes: 30, seconds: 1.8, hemi: Hemisphere.W };
+const [latDD, lonDD] = dmsPairToDD(latDMS, lonDMS);
+// latDD: { kind: "lat", degrees: 48.8544 }
+// lonDD: { kind: "lon", degrees: -123.5005 }
+```
+
 ### Formatting Functions
 
 #### `formatDD(dd: DD, decimals?: number): string`
@@ -160,6 +243,44 @@ Formats Degrees-Minutes-Seconds as a readable string.
 ```typescript
 formatDMS({ kind: AngleKind.LAT, degrees: 45, minutes: 7, seconds: 22.8, hemi: Hemisphere.N })
 // "45° 7' 22.80" N"
+```
+
+### Pair Formatting Functions
+
+#### `formatDDPair(latDD: DD, lonDD: DD, decimals?: number): [string, string]`
+
+Formats a pair of Decimal Degrees as human-readable strings.
+
+```typescript
+const latDD = { kind: AngleKind.LAT, degrees: 48.8544 };
+const lonDD = { kind: AngleKind.LON, degrees: -123.5005 };
+const [latStr, lonStr] = formatDDPair(latDD, lonDD);
+// latStr: "48.85440° N"
+// lonStr: "123.50050° W"
+```
+
+#### `formatDMPair(latDM: DM, lonDM: DM, decimals?: number): [string, string]`
+
+Formats a pair of Degrees-Minutes as human-readable strings.
+
+```typescript
+const latDM = { kind: AngleKind.LAT, degrees: 48, minutes: 51.26, hemi: Hemisphere.N };
+const lonDM = { kind: AngleKind.LON, degrees: 123, minutes: 30.03, hemi: Hemisphere.W };
+const [latStr, lonStr] = formatDMPair(latDM, lonDM);
+// latStr: "48° 51.26' N"
+// lonStr: "123° 30.03' W"
+```
+
+#### `formatDMSPair(latDMS: DMS, lonDMS: DMS, decimals?: number): [string, string]`
+
+Formats a pair of Degrees-Minutes-Seconds as human-readable strings.
+
+```typescript
+const latDMS = { kind: AngleKind.LAT, degrees: 48, minutes: 51, seconds: 15.84, hemi: Hemisphere.N };
+const lonDMS = { kind: AngleKind.LON, degrees: 123, minutes: 30, seconds: 1.8, hemi: Hemisphere.W };
+const [latStr, lonStr] = formatDMSPair(latDMS, lonDMS);
+// latStr: "48° 51' 15.84" N"
+// lonStr: "123° 30' 1.80" W"
 ```
 
 ### Utility Functions
@@ -235,6 +356,86 @@ const parsed = coordinates.map((coord, index) =>
   parseToDD(coord, index % 2 === 0 ? AngleKind.LAT : AngleKind.LON)
 );
 ```
+
+### Working with Coordinate Pairs
+
+```typescript
+// Parse coordinate pairs from various formats
+const [lat1, lon1] = parsePairToDD('48.8544° N', '123.5005° W');
+const [lat2, lon2] = parsePairToDD(48.8544, -123.5005);
+const [lat3, lon3] = parsePairToDD('48° 51.26\' N', '123° 30.03\' W');
+
+// Convert pairs to all formats
+const [latDM, lonDM] = ddPairToDM(lat1, lon1);
+const [latDMS, lonDMS] = ddPairToDMS(lat1, lon1);
+
+// Format pairs for display
+const [latDDStr, lonDDStr] = formatDDPair(lat1, lon1);
+const [latDMStr, lonDMStr] = formatDMPair(latDM, lonDM);
+const [latDMSStr, lonDMSStr] = formatDMSPair(latDMS, lonDMS);
+
+console.log('DD:', latDDStr, lonDDStr);   // "48.85440° N" "123.50050° W"
+console.log('DM:', latDMStr, lonDMStr);   // "48° 51.26' N" "123° 30.03' W"
+console.log('DMS:', latDMSStr, lonDMSStr); // "48° 51' 15.84" N" "123° 30' 1.80" W"
+```
+
+### Complete Workflow Example
+
+```typescript
+// Complete workflow: Parse → Convert → Format
+const [lat, lon] = parsePairToDD('48.8544° N', '123.5005° W');
+
+// Convert to all formats
+const [latDM, lonDM] = ddPairToDM(lat, lon);
+const [latDMS, lonDMS] = ddPairToDMS(lat, lon);
+
+// Format all formats
+const [latDDStr, lonDDStr] = formatDDPair(lat, lon);
+const [latDMStr, lonDMStr] = formatDMPair(latDM, lonDM);
+const [latDMSStr, lonDMSStr] = formatDMSPair(latDMS, lonDMS);
+
+// Round trip validation
+const [latBack, lonBack] = dmPairToDD(latDM, lonDM);
+const [latBack2, lonBack2] = dmsPairToDD(latDMS, lonDMS);
+
+console.log('Original:', lat.degrees, lon.degrees);
+console.log('From DM:', latBack.degrees, lonBack.degrees);
+console.log('From DMS:', latBack2.degrees, lonBack2.degrees);
+```
+
+## Function Reference
+
+### Core Functions
+
+| Function | Description | Input | Output |
+|----------|-------------|-------|--------|
+| `parseToDD()` | Parse single coordinate | `string \| number, AngleKind` | `DD` |
+| `ddToDM()` | Convert DD to DM | `DD, options?` | `DM` |
+| `ddToDMS()` | Convert DD to DMS | `DD, options?` | `DMS` |
+| `dmToDD()` | Convert DM to DD | `DM` | `DD` |
+| `dmsToDD()` | Convert DMS to DD | `DMS` | `DD` |
+| `detectKindFromHemi()` | Get coordinate type from hemisphere | `Hemisphere` | `AngleKind` |
+
+### Pair Functions
+
+| Function | Description | Input | Output |
+|----------|-------------|-------|--------|
+| `parsePairToDD()` | Parse coordinate pair | `string \| number, string \| number` | `[DD, DD]` |
+| `ddPairToDM()` | Convert DD pair to DM pair | `DD, DD, options?` | `[DM, DM]` |
+| `ddPairToDMS()` | Convert DD pair to DMS pair | `DD, DD, options?` | `[DMS, DMS]` |
+| `dmPairToDD()` | Convert DM pair to DD pair | `DM, DM` | `[DD, DD]` |
+| `dmsPairToDD()` | Convert DMS pair to DD pair | `DMS, DMS` | `[DD, DD]` |
+
+### Formatting Functions
+
+| Function | Description | Input | Output |
+|----------|-------------|-------|--------|
+| `formatDD()` | Format single DD | `DD, decimals?` | `string` |
+| `formatDM()` | Format single DM | `DM, decimals?` | `string` |
+| `formatDMS()` | Format single DMS | `DMS, decimals?` | `string` |
+| `formatDDPair()` | Format DD pair | `DD, DD, decimals?` | `[string, string]` |
+| `formatDMPair()` | Format DM pair | `DM, DM, decimals?` | `[string, string]` |
+| `formatDMSPair()` | Format DMS pair | `DMS, DMS, decimals?` | `[string, string]` |
 
 ## Coordinate Format Reference
 
