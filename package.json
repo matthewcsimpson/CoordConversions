@@ -34,10 +34,10 @@
   "keywords": ["coordinates", "DD", "DM", "DMS", "latitude", "longitude", "geodesy", "GIS"],
   "repository": {
     "type": "git",
-    "url": "https://github.com/your-org-or-user/coordconversion.git"
+    "url": "https://github.com/matthewcsimpson/CoordCoversions.git"
   },
   "bugs": {
-    "url": "https://github.com/your-org-or-user/coordconversion/issues"
+    "url": "https://github.com/matthewcsimpson/CoordCoversions/issues"
   },
-  "homepage": "https://github.com/your-org-or-user/coordconversion#readme"
+  "homepage": "https://github.com/matthewcsimpson/CoordCoversions#readme"
 }
