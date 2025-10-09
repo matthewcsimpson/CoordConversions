@@ -18,6 +18,7 @@
   "files": ["dist"],
   "sideEffects": false,
   "engines": { "node": ">=18" },
+  "publishConfig": { "access": "public" },
   "scripts": {
     "build": "tsup src/index.ts --format esm,cjs --dts --sourcemap --clean",
     "test": "jest",
@@ -30,5 +31,13 @@
     "tsup": "^8.5.0",
     "typescript": "^5.6.3"
   },
-  "keywords": ["coordinates","DD","DM","DMS","latitude","longitude","geodesy","GIS"]
+  "keywords": ["coordinates", "DD", "DM", "DMS", "latitude", "longitude", "geodesy", "GIS"],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/your-org-or-user/coordconversion.git"
+  },
+  "bugs": {
+    "url": "https://github.com/your-org-or-user/coordconversion/issues"
+  },
+  "homepage": "https://github.com/your-org-or-user/coordconversion#readme"
 }
