@@ -408,6 +408,9 @@ export function dmsPairToDD(latDMS: DMS, lonDMS: DMS): [DD, DD] {
 // Re-export formatting functions from formatters module
 export { formatDM, formatDMS, formatDD, formatDMPair, formatDMSPair, formatDDPair } from "./formatters";
 
+// Re-export types from types module
+export { CoordinateType, Hemisphere, DD, DM, DMS } from "../types";
+
 // Re-export constants from data module
 export { PRECISION_DEFAULTS, VALIDATION_LIMITS, CONVERSION_CONSTANTS, ROLLOVER_THRESHOLDS, TEST_PRECISION } from "../data";
 
