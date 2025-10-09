@@ -403,40 +403,6 @@ console.log('From DM:', latBack.degrees, lonBack.degrees);
 console.log('From DMS:', latBack2.degrees, lonBack2.degrees);
 ```
 
-## Function Reference
-
-### Core Functions
-
-| Function | Description | Input | Output |
-|----------|-------------|-------|--------|
-| `parseToDD()` | Parse single coordinate | `string \| number, AngleKind` | `DD` |
-| `ddToDM()` | Convert DD to DM | `DD, options?` | `DM` |
-| `ddToDMS()` | Convert DD to DMS | `DD, options?` | `DMS` |
-| `dmToDD()` | Convert DM to DD | `DM` | `DD` |
-| `dmsToDD()` | Convert DMS to DD | `DMS` | `DD` |
-| `detectKindFromHemi()` | Get coordinate type from hemisphere | `Hemisphere` | `AngleKind` |
-
-### Pair Functions
-
-| Function | Description | Input | Output |
-|----------|-------------|-------|--------|
-| `parsePairToDD()` | Parse coordinate pair | `string \| number, string \| number` | `[DD, DD]` |
-| `ddPairToDM()` | Convert DD pair to DM pair | `DD, DD, options?` | `[DM, DM]` |
-| `ddPairToDMS()` | Convert DD pair to DMS pair | `DD, DD, options?` | `[DMS, DMS]` |
-| `dmPairToDD()` | Convert DM pair to DD pair | `DM, DM` | `[DD, DD]` |
-| `dmsPairToDD()` | Convert DMS pair to DD pair | `DMS, DMS` | `[DD, DD]` |
-
-### Formatting Functions
-
-| Function | Description | Input | Output |
-|----------|-------------|-------|--------|
-| `formatDD()` | Format single DD | `DD, decimals?` | `string` |
-| `formatDM()` | Format single DM | `DM, decimals?` | `string` |
-| `formatDMS()` | Format single DMS | `DMS, decimals?` | `string` |
-| `formatDDPair()` | Format DD pair | `DD, DD, decimals?` | `[string, string]` |
-| `formatDMPair()` | Format DM pair | `DM, DM, decimals?` | `[string, string]` |
-| `formatDMSPair()` | Format DMS pair | `DMS, DMS, decimals?` | `[string, string]` |
-
 ## Coordinate Format Reference
 
 | Format | Description | Example |

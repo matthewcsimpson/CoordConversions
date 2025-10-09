@@ -1,11 +1,12 @@
 import { DM, DMS, DD } from "../types";
 import { dirFromSign } from "./helpers";
+import { PRECISION_DEFAULTS } from "../data";
 
 /**
  * Formats a Degrees-Minutes (DM) object as a human-readable string.
  *
  * @param dm - The DM object to format
- * @param decimals - Number of decimal places for minutes (default: 2)
+ * @param decimals - Number of decimal places for minutes (default: PRECISION_DEFAULTS.DM_DECIMALS)
  * @returns A formatted string like "45° 7.38' N"
  *
  * @example
@@ -15,7 +16,7 @@ import { dirFromSign } from "./helpers";
  * formatDM(dm, 4);     // "45° 7.3800' N"
  * ```
  */
-export function formatDM(dm: DM, decimals = 2): string {
+export function formatDM(dm: DM, decimals = PRECISION_DEFAULTS.DM_DECIMALS): string {
   const hemi = dm.hemi ?? dirFromSign(dm.kind, dm.degrees);
   return `${Math.abs(dm.degrees)}° ${dm.minutes.toFixed(decimals)}' ${hemi}`;
 }
@@ -24,7 +25,7 @@ export function formatDM(dm: DM, decimals = 2): string {
  * Formats a Degrees-Minutes-Seconds (DMS) object as a human-readable string.
  *
  * @param dms - The DMS object to format
- * @param decimals - Number of decimal places for seconds (default: 2)
+ * @param decimals - Number of decimal places for seconds (default: PRECISION_DEFAULTS.DMS_DECIMALS)
  * @returns A formatted string like "45° 7' 22.80\" N"
  *
  * @example
@@ -34,7 +35,7 @@ export function formatDM(dm: DM, decimals = 2): string {
  * formatDMS(dms, 3);   // "45° 7' 22.800\" N"
  * ```
  */
-export function formatDMS(dms: DMS, decimals = 2): string {
+export function formatDMS(dms: DMS, decimals = PRECISION_DEFAULTS.DMS_DECIMALS): string {
   const hemi = dms.hemi ?? dirFromSign(dms.kind, dms.degrees);
   return `${Math.abs(dms.degrees)}° ${dms.minutes}' ${dms.seconds.toFixed(
     decimals
@@ -45,7 +46,7 @@ export function formatDMS(dms: DMS, decimals = 2): string {
  * Formats a Decimal Degrees (DD) object as a human-readable string.
  *
  * @param dd - The DD object to format
- * @param decimals - Number of decimal places for degrees (default: 5)
+ * @param decimals - Number of decimal places for degrees (default: PRECISION_DEFAULTS.DD_DECIMALS)
  * @returns A formatted string like "45.12300° N"
  *
  * @example
@@ -55,7 +56,7 @@ export function formatDMS(dms: DMS, decimals = 2): string {
  * formatDD(dd, 3);    // "45.123° N"
  * ```
  */
-export function formatDD(dd: DD, decimals = 5): string {
+export function formatDD(dd: DD, decimals = PRECISION_DEFAULTS.DD_DECIMALS): string {
   const hemi = dirFromSign(dd.kind, dd.degrees);
   return `${Math.abs(dd.degrees).toFixed(decimals)}° ${hemi}`;
 }
@@ -65,7 +66,7 @@ export function formatDD(dd: DD, decimals = 5): string {
  *
  * @param latDM - The latitude DM object
  * @param lonDM - The longitude DM object
- * @param decimals - Number of decimal places for minutes (default: 2)
+ * @param decimals - Number of decimal places for minutes (default: PRECISION_DEFAULTS.DM_DECIMALS)
  * @returns A tuple of formatted strings [latitude, longitude]
  *
  * @example
@@ -80,7 +81,7 @@ export function formatDD(dd: DD, decimals = 5): string {
 export function formatDMPair(
   latDM: DM,
   lonDM: DM,
-  decimals = 2
+  decimals = PRECISION_DEFAULTS.DM_DECIMALS
 ): [string, string] {
   const latStr = formatDM(latDM, decimals);
   const lonStr = formatDM(lonDM, decimals);
@@ -92,7 +93,7 @@ export function formatDMPair(
  *
  * @param latDMS - The latitude DMS object
  * @param lonDMS - The longitude DMS object
- * @param decimals - Number of decimal places for seconds (default: 2)
+ * @param decimals - Number of decimal places for seconds (default: PRECISION_DEFAULTS.DMS_DECIMALS)
  * @returns A tuple of formatted strings [latitude, longitude]
  *
  * @example
@@ -107,7 +108,7 @@ export function formatDMPair(
 export function formatDMSPair(
   latDMS: DMS,
   lonDMS: DMS,
-  decimals = 2
+  decimals = PRECISION_DEFAULTS.DMS_DECIMALS
 ): [string, string] {
   const latStr = formatDMS(latDMS, decimals);
   const lonStr = formatDMS(lonDMS, decimals);
@@ -119,7 +120,7 @@ export function formatDMSPair(
  *
  * @param latDD - The latitude DD object
  * @param lonDD - The longitude DD object
- * @param decimals - Number of decimal places for degrees (default: 5)
+ * @param decimals - Number of decimal places for degrees (default: PRECISION_DEFAULTS.DD_DECIMALS)
  * @returns A tuple of formatted strings [latitude, longitude]
  *
  * @example
@@ -134,7 +135,7 @@ export function formatDMSPair(
 export function formatDDPair(
   latDD: DD,
   lonDD: DD,
-  decimals = 5
+  decimals = PRECISION_DEFAULTS.DD_DECIMALS
 ): [string, string] {
   const latStr = formatDD(latDD, decimals);
   const lonStr = formatDD(lonDD, decimals);

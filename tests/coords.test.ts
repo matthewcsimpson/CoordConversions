@@ -10,9 +10,13 @@ import {
   ddPairToDMS,
   dmPairToDD,
   dmsPairToDD,
+  formatDDPair,
+  formatDMPair,
+  formatDMSPair
 } from '../src';
-import { formatDM, formatDMS, formatDD, formatDDPair, formatDMPair, formatDMSPair } from '../src/formatters';
+import { formatDM, formatDMS, formatDD } from '../src/formatters';
 import { AngleKind, Hemisphere } from "../types";
+import { TEST_PRECISION } from "../data";
 
 // ============================================================================
 // PARSING TESTS
@@ -122,12 +126,12 @@ describe('Conversion Functions', () => {
     // DD → DM → DD
     const dm = ddToDM(testLatDD);
     const ddFromDM = dmToDD(dm);
-    expect(ddFromDM.degrees).toBeCloseTo(testLatDD.degrees, 3); // Sufficient precision for floating point
+    expect(ddFromDM.degrees).toBeCloseTo(testLatDD.degrees, TEST_PRECISION.FLOATING_POINT_TOLERANCE); // Sufficient precision for floating point
 
     // DD → DMS → DD
     const dms = ddToDMS(testLatDD);
     const ddFromDMS = dmsToDD(dms);
-    expect(ddFromDMS.degrees).toBeCloseTo(testLatDD.degrees, 3); // Sufficient precision for floating point
+    expect(ddFromDMS.degrees).toBeCloseTo(testLatDD.degrees, TEST_PRECISION.FLOATING_POINT_TOLERANCE); // Sufficient precision for floating point
   });
 });
 
@@ -424,12 +428,12 @@ describe('Integration Tests', () => {
     
     // Round trip through DM
     const [latDD2, lonDD2] = dmPairToDD(latDM, lonDM);
-    expect(latDD2.degrees).toBeCloseTo(originalLat, 3); // Sufficient precision for floating point
-    expect(lonDD2.degrees).toBeCloseTo(originalLon, 3); // Sufficient precision for floating point
+    expect(latDD2.degrees).toBeCloseTo(originalLat, TEST_PRECISION.FLOATING_POINT_TOLERANCE); // Sufficient precision for floating point
+    expect(lonDD2.degrees).toBeCloseTo(originalLon, TEST_PRECISION.FLOATING_POINT_TOLERANCE); // Sufficient precision for floating point
     
     // Round trip through DMS
     const [latDD3, lonDD3] = dmsPairToDD(latDMS, lonDMS);
-    expect(latDD3.degrees).toBeCloseTo(originalLat, 3); // Sufficient precision for floating point
-    expect(lonDD3.degrees).toBeCloseTo(originalLon, 3); // Sufficient precision for floating point
+    expect(latDD3.degrees).toBeCloseTo(originalLat, TEST_PRECISION.FLOATING_POINT_TOLERANCE); // Sufficient precision for floating point
+    expect(lonDD3.degrees).toBeCloseTo(originalLon, TEST_PRECISION.FLOATING_POINT_TOLERANCE); // Sufficient precision for floating point
   });
 });
