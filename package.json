@@ -46,10 +46,13 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/matthewcsimpson/CoordConversion.git"
+    "url": "git+https://github.com/matthewcsimpson/CoordConversions.git"
   },
   "bugs": {
-    "url": "https://github.com/matthewcsimpson/CoordConversion/issues"
+    "url": "https://github.com/matthewcsimpson/CoordConversions/issues"
   },
-  "homepage": "https://github.com/matthewcsimpson/CoordConversion#readme"
+  "homepage": "https://github.com/matthewcsimpson/CoordConversions#readme",
+  "dependencies": {
+    "jest-util": "^30.2.0"
+  }
 }
