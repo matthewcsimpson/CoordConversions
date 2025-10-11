@@ -36,10 +36,13 @@ import {
   parsePairToDD,
   ddPairToDM,
   ddPairToDMS,
+  dmPairToDD,
+  dmsPairToDD,
   formatDMPair,
   formatDMSPair,
   formatDDPair,
   CoordinateType,
+  Hemisphere,
 } from "coordconversion";
 
 // Parse individual coordinates
@@ -59,7 +62,7 @@ const [latDMS, lonDMS] = ddPairToDMS(latPair, lonPair);
 
 // Format for display
 console.log(formatDM(dm)); // "48° 51.40' N"
-console.log(formatDMS(dms)); // "2° 21' 7.92" E"
+console.log(formatDMS(dms)); // "2° 21' 7.92\" E"
 console.log(formatDD(lat)); // "48.85660° N"
 
 // Format pairs
@@ -105,6 +108,52 @@ interface DMS {
 }
 ```
 
+### Constants
+
+The library exports several useful constants for advanced usage:
+
+```typescript
+import {
+  PRECISION_DEFAULTS,
+  CONVERSION_CONSTANTS,
+  VALIDATION_LIMITS,
+  ROLLOVER_THRESHOLDS,
+  TEST_PRECISION,
+} from "coordconversion";
+
+// Default decimal precision settings
+PRECISION_DEFAULTS = {
+  DD_DECIMALS: 5, // Default decimals for DD formatting
+  DM_DECIMALS: 2, // Default decimals for DM minutes
+  DMS_DECIMALS: 2, // Default decimals for DMS seconds
+  HIGH_PRECISION: 4, // High precision setting
+};
+
+// Mathematical conversion constants
+CONVERSION_CONSTANTS = {
+  MINUTES_PER_DEGREE: 60, // Minutes in a degree
+  SECONDS_PER_DEGREE: 3600, // Seconds in a degree
+  SECONDS_PER_MINUTE: 60, // Seconds in a minute
+};
+
+// Validation range limits
+VALIDATION_LIMITS = {
+  MAX_MINUTES: 60, // Maximum valid minutes value
+  MAX_SECONDS: 60, // Maximum valid seconds value
+};
+
+// Internal rollover thresholds
+ROLLOVER_THRESHOLDS = {
+  MINUTES_TO_DEGREES: 60, // When minutes roll over to degrees
+  SECONDS_TO_MINUTES: 60, // When seconds roll over to minutes
+};
+
+// Test precision constants
+TEST_PRECISION = {
+  FLOATING_POINT_TOLERANCE: 3, // Decimal places for test comparisons
+};
+```
+
 ### Parsing Functions
 
 #### `parseToDD(input: string | number, kind: CoordinateType): DD`
@@ -135,7 +184,7 @@ Converts Decimal Degrees to Degrees-Minutes format.
 
 **Options:**
 
-- `decimals`: Number of decimal places for minutes (default: 2)
+- `decimals`: Number of decimal places for minutes (default: PRECISION_DEFAULTS.DM_DECIMALS = 2)
 - `clamp`: Whether to clamp degrees to valid ranges (default: false)
 
 #### `ddToDMS(dd: DD, opts?: { decimals?: number; clamp?: boolean }): DMS`
@@ -144,7 +193,7 @@ Converts Decimal Degrees to Degrees-Minutes-Seconds format.
 
 **Options:**
 
-- `decimals`: Number of decimal places for seconds (default: 2)
+- `decimals`: Number of decimal places for seconds (default: PRECISION_DEFAULTS.DMS_DECIMALS = 2)
 - `clamp`: Whether to clamp degrees to valid ranges (default: false)
 
 #### `dmToDD(dm: DM): DD`
@@ -252,6 +301,8 @@ formatDD({ kind: CoordinateType.LAT, degrees: 45.123 }, 3);
 // "45.123° N"
 ```
 
+**Note:** Default decimals is PRECISION_DEFAULTS.DD_DECIMALS (5).
+
 #### `formatDM(dm: DM, decimals?: number): string`
 
 Formats Degrees-Minutes as a readable string.
@@ -266,6 +317,8 @@ formatDM({
 // "45° 7.38' N"
 ```
 
+**Note:** Default decimals is PRECISION_DEFAULTS.DM_DECIMALS (2).
+
 #### `formatDMS(dms: DMS, decimals?: number): string`
 
 Formats Degrees-Minutes-Seconds as a readable string.
@@ -278,8 +331,10 @@ formatDMS({
   seconds: 22.8,
   hemi: Hemisphere.N,
 });
-// "45° 7' 22.80" N"
+// "45° 7' 22.80\" N"
 ```
+
+**Note:** Default decimals is PRECISION_DEFAULTS.DMS_DECIMALS (2).
 
 ### Pair Formatting Functions
 
@@ -337,19 +392,8 @@ const lonDMS = {
   hemi: Hemisphere.W,
 };
 const [latStr, lonStr] = formatDMSPair(latDMS, lonDMS);
-// latStr: "48° 51' 15.84" N"
-// lonStr: "123° 30' 1.80" W"
-```
-
-### Utility Functions
-
-#### `detectKindFromHemi(hemi: Hemisphere): CoordinateType`
-
-Determines coordinate type from hemisphere indicator.
-
-```typescript
-detectKindFromHemi(Hemisphere.N); // CoordinateType.LAT
-detectKindFromHemi(Hemisphere.E); // CoordinateType.LON
+// latStr: "48° 51' 15.84\" N"
+// lonStr: "123° 30' 1.80\" W"
 ```
 
 ## Validation and Error Handling
@@ -379,10 +423,12 @@ parseToDD("invalid", CoordinateType.LAT); // Error: Unrecognized coordinate form
 ### Custom Precision
 
 ```typescript
+import { PRECISION_DEFAULTS } from "coordconversion";
+
 const dd = { kind: CoordinateType.LAT, degrees: 45.123456789 };
 
 // High precision DM
-const dm = ddToDM(dd, { decimals: 4 });
+const dm = ddToDM(dd, { decimals: PRECISION_DEFAULTS.HIGH_PRECISION });
 console.log(formatDM(dm)); // "45° 7.4074' N"
 
 // High precision DMS
@@ -398,6 +444,20 @@ const invalidLat = { kind: CoordinateType.LAT, degrees: 95 };
 // Clamp to valid range
 const clampedDM = ddToDM(invalidLat, { clamp: true });
 console.log(formatDM(clampedDM)); // "90° 0.00' N"
+```
+
+### Using Constants
+
+```typescript
+import { CONVERSION_CONSTANTS, VALIDATION_LIMITS } from "coordconversion";
+
+// Access conversion constants
+console.log(CONVERSION_CONSTANTS.MINUTES_PER_DEGREE); // 60
+console.log(CONVERSION_CONSTANTS.SECONDS_PER_DEGREE); // 3600
+
+// Check validation limits
+console.log(VALIDATION_LIMITS.MAX_MINUTES); // 60
+console.log(VALIDATION_LIMITS.MAX_SECONDS); // 60
 ```
 
 ### Batch Processing
@@ -429,7 +489,7 @@ const [latDMSStr, lonDMSStr] = formatDMSPair(latDMS, lonDMS);
 
 console.log("DD:", latDDStr, lonDDStr); // "48.85440° N" "123.50050° W"
 console.log("DM:", latDMStr, lonDMStr); // "48° 51.26' N" "123° 30.03' W"
-console.log("DMS:", latDMSStr, lonDMSStr); // "48° 51' 15.84" N" "123° 30' 1.80" W"
+console.log("DMS:", latDMSStr, lonDMSStr); // "48° 51' 15.84\" N" "123° 30' 1.80\" W"
 ```
 
 ### Complete Workflow Example
