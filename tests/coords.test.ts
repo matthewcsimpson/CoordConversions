@@ -4,7 +4,6 @@ import {
   ddToDMS,
   dmToDD,
   dmsToDD,
-  detectKindFromHemi,
   parsePairToDD,
   ddPairToDM,
   ddPairToDMS,
@@ -63,13 +62,6 @@ describe("Parsing Functions", () => {
     const dd = parseToDD(48.8544, CoordinateType.LAT);
     expect(dd.kind).toBe(CoordinateType.LAT);
     expect(dd.degrees).toBeCloseTo(48.8544, 6);
-  });
-
-  test("detectKindFromHemi", () => {
-    expect(detectKindFromHemi(Hemisphere.N)).toBe(CoordinateType.LAT);
-    expect(detectKindFromHemi(Hemisphere.S)).toBe(CoordinateType.LAT);
-    expect(detectKindFromHemi(Hemisphere.E)).toBe(CoordinateType.LON);
-    expect(detectKindFromHemi(Hemisphere.W)).toBe(CoordinateType.LON);
   });
 });
 

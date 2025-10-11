@@ -19,26 +19,6 @@ import {
 // ============================================================================
 
 /**
- * Determines the coordinate type (latitude or longitude) from a hemisphere indicator.
- *
- * @param hemi - The hemisphere indicator (N, S, E, or W)
- * @returns The corresponding coordinate type - LAT for N/S, LON for E/W
- *
- * @example
- * ```typescript
- * detectKindFromHemi(Hemisphere.N)  // CoordinateType.LAT
- * detectKindFromHemi(Hemisphere.E)  // CoordinateType.LON
- * detectKindFromHemi(Hemisphere.S)  // CoordinateType.LAT
- * detectKindFromHemi(Hemisphere.W)  // CoordinateType.LON
- * ```
- */
-export function detectKindFromHemi(hemi: Hemisphere): CoordinateType {
-  return hemi === Hemisphere.N || hemi === Hemisphere.S
-    ? CoordinateType.LAT
-    : CoordinateType.LON;
-}
-
-/**
  * Parses various coordinate formats into Decimal Degrees (DD) format.
  *
  * Supports multiple input formats:
@@ -61,7 +41,7 @@ export function detectKindFromHemi(hemi: Hemisphere): CoordinateType {
  * parseToDD("-122.4194", CoordinateType.LON)         // { kind: "lon", degrees: -122.4194 }
  * ```
  */
-export function parseToDD(input: string | number, kind: CoordinateType): DD {
+function parseToDD(input: string | number, kind: CoordinateType): DD {
   if (
     typeof input === "number" ||
     (typeof input === "string" && /^[+-]?\d+(\.\d+)?$/.test(input.trim()))
@@ -146,10 +126,7 @@ export function parseToDD(input: string | number, kind: CoordinateType): DD {
  * // { kind: "lat", degrees: 45, minutes: 7.3800, hemi: "N" }
  * ```
  */
-export function ddToDM(
-  dd: DD,
-  opts?: { decimals?: number; clamp?: boolean }
-): DM {
+function ddToDM(dd: DD, opts?: { decimals?: number; clamp?: boolean }): DM {
   const decimals = opts?.decimals ?? PRECISION_DEFAULTS.DM_DECIMALS;
   const degVal = opts?.clamp ? clampDegrees(dd.kind, dd.degrees) : dd.degrees;
 
@@ -197,10 +174,7 @@ export function ddToDM(
  * // { kind: "lat", degrees: 45, minutes: 7, seconds: 22.800, hemi: "N" }
  * ```
  */
-export function ddToDMS(
-  dd: DD,
-  opts?: { decimals?: number; clamp?: boolean }
-): DMS {
+function ddToDMS(dd: DD, opts?: { decimals?: number; clamp?: boolean }): DMS {
   const decimals = opts?.decimals ?? PRECISION_DEFAULTS.DMS_DECIMALS;
   const degVal = opts?.clamp ? clampDegrees(dd.kind, dd.degrees) : dd.degrees;
 
@@ -247,7 +221,7 @@ export function ddToDMS(
  * // { kind: "lat", degrees: 45.123 }
  * ```
  */
-export function dmToDD(dm: DM): DD {
+function dmToDD(dm: DM): DD {
   if (dm.minutes < 0 || dm.minutes >= VALIDATION_LIMITS.MAX_MINUTES)
     throw new Error("Minutes must be in [0, 60)");
   const base =
@@ -272,7 +246,7 @@ export function dmToDD(dm: DM): DD {
  * // { kind: "lat", degrees: 45.123 }
  * ```
  */
-export function dmsToDD(dms: DMS): DD {
+function dmsToDD(dms: DMS): DD {
   if (dms.minutes < 0 || dms.minutes >= VALIDATION_LIMITS.MAX_MINUTES)
     throw new Error("Minutes must be in [0, 60)");
   if (dms.seconds < 0 || dms.seconds >= VALIDATION_LIMITS.MAX_SECONDS)
@@ -313,7 +287,7 @@ export function dmsToDD(dms: DMS): DD {
  * // lon2: { kind: "lon", degrees: -123.5005 }
  * ```
  */
-export function parsePairToDD(
+function parsePairToDD(
   latInput: string | number,
   lonInput: string | number
 ): [DD, DD] {
@@ -341,7 +315,7 @@ export function parsePairToDD(
  * // lonDM: { kind: "lon", degrees: 123, minutes: 30.03, hemi: "W" }
  * ```
  */
-export function ddPairToDM(
+function ddPairToDM(
   latDD: DD,
   lonDD: DD,
   opts?: { decimals?: number; clamp?: boolean }
@@ -370,7 +344,7 @@ export function ddPairToDM(
  * // lonDMS: { kind: "lon", degrees: 123, minutes: 30, seconds: 1.8, hemi: "W" }
  * ```
  */
-export function ddPairToDMS(
+function ddPairToDMS(
   latDD: DD,
   lonDD: DD,
   opts?: { decimals?: number; clamp?: boolean }
@@ -398,7 +372,7 @@ export function ddPairToDMS(
  * // lonDD: { kind: "lon", degrees: -123.5005 }
  * ```
  */
-export function dmPairToDD(latDM: DM, lonDM: DM): [DD, DD] {
+function dmPairToDD(latDM: DM, lonDM: DM): [DD, DD] {
   const latDD = dmToDD(latDM);
   const lonDD = dmToDD(lonDM);
   return [latDD, lonDD];
@@ -422,11 +396,25 @@ export function dmPairToDD(latDM: DM, lonDM: DM): [DD, DD] {
  * // lonDD: { kind: "lon", degrees: -123.5005 }
  * ```
  */
-export function dmsPairToDD(latDMS: DMS, lonDMS: DMS): [DD, DD] {
+function dmsPairToDD(latDMS: DMS, lonDMS: DMS): [DD, DD] {
   const latDD = dmsToDD(latDMS);
   const lonDD = dmsToDD(lonDMS);
   return [latDD, lonDD];
 }
+
+// Export core functions
+export {
+  parseToDD,
+  ddToDM,
+  ddToDMS,
+  dmToDD,
+  dmsToDD,
+  parsePairToDD,
+  ddPairToDM,
+  ddPairToDMS,
+  dmPairToDD,
+  dmsPairToDD,
+};
 
 // Re-export formatting functions from formatters module
 export {
@@ -440,12 +428,3 @@ export {
 
 // Re-export types from types module
 export { CoordinateType, Hemisphere, DD, DM, DMS } from "../types";
-
-// Re-export constants from data module
-export {
-  PRECISION_DEFAULTS,
-  VALIDATION_LIMITS,
-  CONVERSION_CONSTANTS,
-  ROLLOVER_THRESHOLDS,
-  TEST_PRECISION,
-} from "../data";

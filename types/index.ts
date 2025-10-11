@@ -1,29 +1,31 @@
-export enum CoordinateType {
+enum CoordinateType {
   LAT = "lat",
   LON = "lon",
 }
 
-export enum Hemisphere {
+enum Hemisphere {
   N = "N",
   S = "S",
   E = "E",
   W = "W",
 }
 
-export interface DD {
+interface DD {
   kind: CoordinateType;
   degrees: number;
 }
-export interface DM {
+interface DM {
   kind: CoordinateType;
   degrees: number;
   minutes: number;
   hemi?: Hemisphere;
 }
-export interface DMS {
+interface DMS {
   kind: CoordinateType;
   degrees: number;
   minutes: number;
   seconds: number;
   hemi?: Hemisphere;
 }
+
+export { CoordinateType, Hemisphere, DD, DM, DMS };
