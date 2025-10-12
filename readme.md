@@ -38,7 +38,7 @@ These are the available imports from the library.
 
 ```typescript
 import {
-  // For ndividual coordinates
+  // For individual coordinates
   parseToDD, // Parse values to Decimal Degrees (DD)
   ddToDM, // Convert DD to Degrees-Minutes (DM)
   ddToDMS, // Convert DD to Degrees-Minutes-Seconds (DMS)
