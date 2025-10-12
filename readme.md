@@ -115,8 +115,9 @@ const [latStr, lonStr] = formatDMPair(latDM, lonDM);
 console.log(latStr, lonStr); // e.g. "48° 51.26' N", "123° 30.03' W"
 ```
 
+This can also be accomplished in a single line
+
 ```typescript
-// One-liner: parse pair -> convert to DM pair -> format DM pair
 const [latStr, lonStr] = formatDMPair(
   ...ddPairToDM(...parsePairToDD("48.8544° N", "123.5005° W"))
 );
