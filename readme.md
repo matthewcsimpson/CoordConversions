@@ -252,7 +252,8 @@ const [latDM, lonDM] = ddPairToDM(latDD, lonDD);
 //      kind: "lat",
 //      degrees: 48,
 //      minutes: 51.26,
-//      hemi: "N" },
+//      hemi: "N"
+//    },
 //    {
 //      kind: "lon",
 //      degrees: 123,
@@ -566,4 +567,4 @@ console.log("From DMS:", latBack2.degrees, lonBack2.degrees);
 
 ## License
 
-MIT © Matthew Simpson
+MIT © Matthew Simpson, 2025
