@@ -82,7 +82,8 @@ const dm = ddToDM(dd);
 3. Format the restult into a readable string.
 
 ```typescript
-formatDM(dm);
+const formatted = formatDM(dm);
+console.log(formatted); // e.g. "45° 7.38' N"
 ```
 
 This can be accomplished in a single line.
@@ -91,7 +92,7 @@ This can be accomplished in a single line.
 const formatted = formatDM(
   ddToDM(parseToDD("45° 7' 22.8\" N", CoordinateType.LAT))
 );
-console.log(formatted); // return "45° 7.38' N"
+console.log(formatted); // e.g. "45° 7.38' N"
 ```
 
 #### Coordinate Pairs
