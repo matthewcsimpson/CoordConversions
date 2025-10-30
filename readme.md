@@ -17,9 +17,42 @@ A robust TypeScript library for converting between different geographic coordina
 
 ## Installation
 
+### NPM Installation
+
 ```bash
 npm install coordconversion
 ```
+
+### CDN Usage (Browser)
+
+For quick browser usage without a build step, you can use CDN links:
+
+**Global Script (Easy):**
+
+```html
+<script src="https://unpkg.com/coordconversion@latest/dist/index.global.js"></script>
+<script>
+  const { parseToDD, CoordinateType } = CoordConversion;
+  // Use the library functions directly
+</script>
+```
+
+**ES Modules:**
+
+```html
+<script type="module">
+  import {
+    parseToDD,
+    CoordinateType,
+  } from "https://unpkg.com/coordconversion@latest/dist/index.js";
+  // Use the library functions
+</script>
+```
+
+**Alternative CDNs:**
+
+- unpkg: `https://unpkg.com/coordconversion@latest/dist/`
+- jsDelivr: `https://cdn.jsdelivr.net/npm/coordconversion@latest/dist/`
 
 ## API Reference
 
@@ -549,6 +582,127 @@ const [latBack2, lonBack2] = dmsPairToDD(latDMS, lonDMS);
 console.log("Original:", lat.degrees, lon.degrees);
 console.log("From DM:", latBack.degrees, lonBack.degrees);
 console.log("From DMS:", latBack2.degrees, lonBack2.degrees);
+```
+
+## Usage in Different Environments
+
+### Node.js (ES Modules)
+
+```javascript
+import { parseToDD, ddToDM, formatDM, CoordinateType } from "coordconversion";
+
+const dd = parseToDD("45° 7' 22.8\" N", CoordinateType.LAT);
+const dm = ddToDM(dd);
+console.log(formatDM(dm)); // "45° 7.38' N"
+```
+
+### Node.js (CommonJS)
+
+```javascript
+const {
+  parseToDD,
+  ddToDM,
+  formatDM,
+  CoordinateType,
+} = require("coordconversion");
+
+const dd = parseToDD("45° 7' 22.8\" N", CoordinateType.LAT);
+const dm = ddToDM(dd);
+console.log(formatDM(dm)); // "45° 7.38' N"
+```
+
+### Browser (ES Modules)
+
+```html
+<script type="module">
+  import {
+    parseToDD,
+    ddToDM,
+    formatDM,
+    CoordinateType,
+  } from "https://unpkg.com/coordconversion@latest/dist/index.js";
+
+  const dd = parseToDD("45° 7' 22.8\" N", CoordinateType.LAT);
+  const dm = ddToDM(dd);
+  console.log(formatDM(dm)); // "45° 7.38' N"
+</script>
+```
+
+### Browser (Script Tag with Global)
+
+```html
+<script src="https://unpkg.com/coordconversion@latest/dist/index.global.js"></script>
+<script>
+  const { parseToDD, ddToDM, formatDM, CoordinateType } = CoordConversion;
+
+  const dd = parseToDD("45° 7' 22.8\" N", CoordinateType.LAT);
+  const dm = ddToDM(dd);
+  console.log(formatDM(dm)); // "45° 7.38' N"
+</script>
+```
+
+### Browser (Dynamic Import)
+
+```html
+<script>
+  (async () => {
+    const { parseToDD, ddToDM, formatDM, CoordinateType } = await import(
+      "https://unpkg.com/coordconversion@latest/dist/index.js"
+    );
+
+    const dd = parseToDD("45° 7' 22.8\" N", CoordinateType.LAT);
+    const dm = ddToDM(dd);
+    console.log(formatDM(dm)); // "45° 7.38' N"
+  })();
+</script>
+```
+
+### Complete Vanilla JavaScript Example
+
+```html
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Coordinate Conversion Example</title>
+  </head>
+  <body>
+    <h1>Coordinate Conversion Demo</h1>
+    <div id="output"></div>
+
+    <script src="https://unpkg.com/coordconversion@latest/dist/index.global.js"></script>
+    <script>
+      const {
+        parseToDD,
+        ddToDM,
+        ddToDMS,
+        formatDD,
+        formatDM,
+        formatDMS,
+        CoordinateType,
+      } = CoordConversion;
+
+      // Parse a coordinate
+      const dd = parseToDD("48° 51' 15.84\" N", CoordinateType.LAT);
+
+      // Convert to different formats
+      const dm = ddToDM(dd);
+      const dms = ddToDMS(dd);
+
+      // Format for display
+      const ddStr = formatDD(dd);
+      const dmStr = formatDM(dm);
+      const dmsStr = formatDMS(dms);
+
+      // Display results
+      document.getElementById("output").innerHTML = `
+            <p><strong>Original:</strong> 48° 51' 15.84" N</p>
+            <p><strong>DD:</strong> ${ddStr}</p>
+            <p><strong>DM:</strong> ${dmStr}</p>
+            <p><strong>DMS:</strong> ${dmsStr}</p>
+        `;
+    </script>
+  </body>
+</html>
 ```
 
 ## Coordinate Format Reference
