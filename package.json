@@ -1,15 +1,20 @@
 {
   "name": "coordconversion",
-  "version": "1.0.7",
+  "version": "1.0.8",
   "description": "Convert between DD, DM, and DMS with robust parsing and formatting.",
   "license": "MIT",
   "author": "Matthew Simpson",
   "type": "module",
   "main": "./dist/index.cjs",
   "module": "./dist/index.js",
+  "browser": "./dist/index.js",
+  "unpkg": "./dist/index.global.js",
+  "jsdelivr": "./dist/index.global.js",
   "types": "./dist/index.d.ts",
   "exports": {
     ".": {
+      "browser": "./dist/index.js",
+      "umd": "./dist/index.global.js",
       "import": "./dist/index.js",
       "require": "./dist/index.cjs"
     },
@@ -23,7 +28,7 @@
     "node": ">=18"
   },
   "scripts": {
-    "build": "tsup src/index.ts --format esm,cjs --dts --sourcemap --clean",
+    "build": "tsup src/index.ts --format esm,cjs,iife --dts --sourcemap --clean --global-name CoordConversion",
     "test": "jest",
     "prepublishOnly": "npm run build && npm test"
   },
@@ -84,7 +89,14 @@
     "nodejs",
     "browser",
     "esm",
-    "commonjs"
+    "commonjs",
+    "vanilla-js",
+    "cdn",
+    "unpkg",
+    "jsdelivr",
+    "umd",
+    "iife",
+    "script-tag"
   ],
   "repository": {
     "type": "git",
