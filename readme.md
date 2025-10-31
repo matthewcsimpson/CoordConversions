@@ -2,6 +2,10 @@
 
 A robust TypeScript library for converting between different geographic coordinate formats: **Decimal Degrees (DD)**, **Degrees-Minutes (DM)**, and **Degrees-Minutes-Seconds (DMS)**. Features comprehensive parsing, validation, and formatting with support for hemisphere indicators.
 
+You can see a <a href="https://codepen.io/matthewcsimpson/pen/RNrYdXv" target="_blank">demo on CodePen</a>.
+
+View it <a href="https://github.com/matthewcsimpson/CoordConversions" target="_blank">on GitHub</a>.
+
 ## Features
 
 - 🔄 **Bidirectional Conversions**: DD ↔ DM ↔ DMS
@@ -116,7 +120,7 @@ const dm = ddToDM(dd);
 
 ```typescript
 const formatted = formatDM(dm);
-console.log(formatted); // e.g. "45° 7.38' N"
+console.log(formatted); // e.g. "45° 7.38000' N"
 ```
 
 This can be accomplished in a single line.
@@ -125,7 +129,7 @@ This can be accomplished in a single line.
 const formatted = formatDM(
   ddToDM(parseToDD("45° 7' 22.8\" N", CoordinateType.LAT))
 );
-console.log(formatted); // e.g. "45° 7.38' N"
+console.log(formatted); // e.g. "45° 7.38000' N"
 ```
 
 #### Coordinate Pairs
@@ -146,7 +150,7 @@ const [latDM, lonDM] = ddPairToDM(lat, lon);
 
 ```typescript
 const [latStr, lonStr] = formatDMPair(latDM, lonDM);
-console.log(latStr, lonStr); // e.g. "48° 51.26' N", "123° 30.03' W"
+console.log(latStr, lonStr); // e.g. "48° 51.26400' N", "123° 30.03000' W"
 ```
 
 This can also be accomplished in a single line
@@ -474,7 +478,7 @@ All formatting functions accept an optional `decimals` parameter:
 
 ```typescript
 const formatted = formatDD(dd, 3); // 3 decimal places instead of default 5
-const formatted2 = formatDM(dm, 4); // 4 decimal places for minutes instead of default 2
+const formatted2 = formatDM(dm, 4); // 4 decimal places for minutes instead of default 5
 ```
 
 ## Validation and Error Handling
@@ -525,7 +529,7 @@ console.log(formatDMS(dms)); // "45° 7' 24.444\" N"
 // Use clamp option to handle out-of-range values during conversion
 const validDD = parseToDD("89.5", CoordinateType.LAT); // Valid input
 const clampedDM = ddToDM(validDD, { clamp: true });
-console.log(formatDM(clampedDM)); // "89° 30.00' N"
+console.log(formatDM(clampedDM)); // "89° 30.00000' N"
 ```
 
 ### Batch Processing
@@ -593,7 +597,7 @@ import { parseToDD, ddToDM, formatDM, CoordinateType } from "coordconversion";
 
 const dd = parseToDD("45° 7' 22.8\" N", CoordinateType.LAT);
 const dm = ddToDM(dd);
-console.log(formatDM(dm)); // "45° 7.38' N"
+console.log(formatDM(dm)); // "45° 7.38000' N"
 ```
 
 ### Node.js (CommonJS)
@@ -608,7 +612,7 @@ const {
 
 const dd = parseToDD("45° 7' 22.8\" N", CoordinateType.LAT);
 const dm = ddToDM(dd);
-console.log(formatDM(dm)); // "45° 7.38' N"
+console.log(formatDM(dm)); // "45° 7.38000' N"
 ```
 
 ### Browser (ES Modules)
@@ -624,7 +628,7 @@ console.log(formatDM(dm)); // "45° 7.38' N"
 
   const dd = parseToDD("45° 7' 22.8\" N", CoordinateType.LAT);
   const dm = ddToDM(dd);
-  console.log(formatDM(dm)); // "45° 7.38' N"
+  console.log(formatDM(dm)); // "45° 7.38000' N"
 </script>
 ```
 
@@ -637,7 +641,7 @@ console.log(formatDM(dm)); // "45° 7.38' N"
 
   const dd = parseToDD("45° 7' 22.8\" N", CoordinateType.LAT);
   const dm = ddToDM(dd);
-  console.log(formatDM(dm)); // "45° 7.38' N"
+  console.log(formatDM(dm)); // "45° 7.38000' N"
 </script>
 ```
 
@@ -652,7 +656,7 @@ console.log(formatDM(dm)); // "45° 7.38' N"
 
     const dd = parseToDD("45° 7' 22.8\" N", CoordinateType.LAT);
     const dm = ddToDM(dd);
-    console.log(formatDM(dm)); // "45° 7.38' N"
+    console.log(formatDM(dm)); // "45° 7.38000' N"
   })();
 </script>
 ```

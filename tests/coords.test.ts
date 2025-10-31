@@ -176,7 +176,7 @@ describe("Formatting Functions", () => {
 
   test("formatDM", () => {
     const formatted = formatDM(testDM);
-    expect(formatted).toMatch(/48° 51\.26' N/);
+    expect(formatted).toMatch(/48° 51\.26400' N/);
   });
 
   test("formatDM - with custom decimals", () => {
@@ -186,7 +186,7 @@ describe("Formatting Functions", () => {
 
   test("formatDMS", () => {
     const formatted = formatDMS(testDMS);
-    expect(formatted).toMatch(/48° 51' 15\.84" N/);
+    expect(formatted).toMatch(/48° 51' 15\.84000" N/);
   });
 
   test("formatDMS - with custom decimals", () => {
@@ -320,8 +320,8 @@ describe("Pair Functions", () => {
     };
     const [latStr, lonStr] = formatDMPair(latDM, lonDM);
 
-    expect(latStr).toMatch(/48° 51\.26' N/);
-    expect(lonStr).toMatch(/123° 30\.03' W/);
+    expect(latStr).toMatch(/48° 51\.26400' N/);
+    expect(lonStr).toMatch(/123° 30\.03000' W/);
   });
 
   test("formatDMSPair", () => {
@@ -341,8 +341,8 @@ describe("Pair Functions", () => {
     };
     const [latStr, lonStr] = formatDMSPair(latDMS, lonDMS);
 
-    expect(latStr).toMatch(/48° 51' 15\.84" N/);
-    expect(lonStr).toMatch(/123° 30' 1\.80" W/);
+    expect(latStr).toMatch(/48° 51' 15\.84000" N/);
+    expect(lonStr).toMatch(/123° 30' 1\.80000" W/);
   });
 });
 
@@ -507,10 +507,10 @@ describe("Integration Tests", () => {
 
     expect(latDDStr).toMatch(/48\.85440° N/);
     expect(lonDDStr).toMatch(/123\.50050° W/);
-    expect(latDMStr).toMatch(/48° 51\.26' N/);
-    expect(lonDMStr).toMatch(/123° 30\.03' W/);
-    expect(latDMSStr).toMatch(/48° 51' 15\.84" N/);
-    expect(lonDMSStr).toMatch(/123° 30' 1\.80" W/);
+    expect(latDMStr).toMatch(/48° 51\.26400' N/);
+    expect(lonDMStr).toMatch(/123° 30\.03000' W/);
+    expect(latDMSStr).toMatch(/48° 51' 15\.84000" N/);
+    expect(lonDMSStr).toMatch(/123° 30' 1\.80000" W/);
   });
 
   test("round trip accuracy", () => {

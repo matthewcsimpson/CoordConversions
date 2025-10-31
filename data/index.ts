@@ -2,9 +2,9 @@ export const DEG_MAX = { lat: 90, lon: 180 };
 
 export const PRECISION_DEFAULTS = {
   DD_DECIMALS: 5,
-  DM_DECIMALS: 2,
-  DMS_DECIMALS: 2,
-  HIGH_PRECISION: 4,
+  DM_DECIMALS: 5,
+  DMS_DECIMALS: 5,
+  HIGH_PRECISION: 5,
 };
 
 export const CONVERSION_CONSTANTS = {
@@ -24,5 +24,5 @@ export const ROLLOVER_THRESHOLDS = {
 };
 
 export const TEST_PRECISION = {
-  FLOATING_POINT_TOLERANCE: 3,
+  FLOATING_POINT_TOLERANCE: 5,
 };
