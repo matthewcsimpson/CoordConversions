@@ -4,8 +4,6 @@ A robust TypeScript library for converting between different geographic coordina
 
 You can see a <a href="https://codepen.io/matthewcsimpson/pen/RNrYdXv" target="_blank">demo on CodePen</a>.
 
-View it <a href="https://github.com/matthewcsimpson/CoordConversions" target="_blank">on GitHub</a>.
-
 ## Features
 
 - 🔄 **Bidirectional Conversions**: DD ↔ DM ↔ DMS
@@ -127,7 +125,7 @@ This can be accomplished in a single line.
 
 ```typescript
 const formatted = formatDM(
-  ddToDM(parseToDD("45° 7' 22.8\" N", CoordinateType.LAT))
+  ddToDM(parseToDD("45° 7' 22.8\" N", CoordinateType.LAT)),
 );
 console.log(formatted); // e.g. "45° 7.38000' N"
 ```
@@ -157,7 +155,7 @@ This can also be accomplished in a single line
 
 ```typescript
 const [latStr, lonStr] = formatDMPair(
-  ...ddPairToDM(...parsePairToDD("48.8544° N", "123.5005° W"))
+  ...ddPairToDM(...parsePairToDD("48.8544° N", "123.5005° W")),
 );
 console.log(latStr, lonStr); // e.g. "48° 51.26' N", "123° 30.03' W"
 ```
@@ -538,7 +536,7 @@ console.log(formatDM(clampedDM)); // "89° 30.00000' N"
 const coordinates = ["40.7128° N", "74.0060° W", "51.5074° N", "0.1278° W"];
 
 const parsed = coordinates.map((coord, index) =>
-  parseToDD(coord, index % 2 === 0 ? CoordinateType.LAT : CoordinateType.LON)
+  parseToDD(coord, index % 2 === 0 ? CoordinateType.LAT : CoordinateType.LON),
 );
 ```
 
@@ -650,9 +648,8 @@ console.log(formatDM(dm)); // "45° 7.38000' N"
 ```html
 <script>
   (async () => {
-    const { parseToDD, ddToDM, formatDM, CoordinateType } = await import(
-      "https://unpkg.com/coordconversion@latest/dist/index.js"
-    );
+    const { parseToDD, ddToDM, formatDM, CoordinateType } =
+      await import("https://unpkg.com/coordconversion@latest/dist/index.js");
 
     const dd = parseToDD("45° 7' 22.8\" N", CoordinateType.LAT);
     const dm = ddToDM(dd);
