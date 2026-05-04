@@ -207,7 +207,7 @@ function ddToDMS(dd: DD, opts?: { decimals?: number; clamp?: boolean }): DMS {
  * @param dm - The degrees-minutes object to convert
  * @returns A DD object with decimal degrees
  *
- * @throws {Error} When minutes are out of valid range [0, CONVERSION_CONSTANTS.MINUTES_PER_DEGREE)
+ * @throws {Error} When minutes are not in [0, 60)
  *
  * @example
  * ```typescript
@@ -232,7 +232,7 @@ function dmToDD(dm: DM): DD {
  * @param dms - The degrees-minutes-seconds object to convert
  * @returns A DD object with decimal degrees
  *
- * @throws {Error} When minutes or seconds are out of valid range [0, CONVERSION_CONSTANTS.MINUTES_PER_DEGREE / CONVERSION_CONSTANTS.SECONDS_PER_MINUTE)
+ * @throws {Error} When minutes are not in [0, 60) or seconds are not in [0, 60)
  *
  * @example
  * ```typescript
@@ -356,7 +356,7 @@ function ddPairToDMS(
  * @param lonDM - The longitude DM object
  * @returns A tuple of DD objects [latitude, longitude]
  *
- * @throws {Error} When minutes are out of valid range [0, CONVERSION_CONSTANTS.MINUTES_PER_DEGREE) for either coordinate
+ * @throws {Error} When minutes are not in [0, 60) for either coordinate
  *
  * @example
  * ```typescript
@@ -380,7 +380,7 @@ function dmPairToDD(latDM: DM, lonDM: DM): [DD, DD] {
  * @param lonDMS - The longitude DMS object
  * @returns A tuple of DD objects [latitude, longitude]
  *
- * @throws {Error} When minutes or seconds are out of valid range [0, CONVERSION_CONSTANTS.MINUTES_PER_DEGREE / CONVERSION_CONSTANTS.SECONDS_PER_MINUTE) for either coordinate
+ * @throws {Error} When minutes are not in [0, 60) or seconds are not in [0, 60) for either coordinate
  *
  * @example
  * ```typescript
