@@ -503,8 +503,9 @@ describe("Edge Cases", () => {
   });
 
   test("ddToDMS - seconds-only rollover (carries into minutes)", () => {
-    // 45.5166667 → 30° 60" → 31° 0"
-    const dd = { kind: CoordinateType.LAT, degrees: 45.5166667 };
+    // 45.5166664 → floor(frac*60)=30, raw seconds=59.999... → toFixed(2)="60.00"
+    // → seconds rollover branch fires: seconds=0, minutes=30+1=31
+    const dd = { kind: CoordinateType.LAT, degrees: 45.5166664 };
     const dms = ddToDMS(dd, { decimals: 2 });
     expect(dms.degrees).toBe(45);
     expect(dms.minutes).toBe(31);
@@ -512,7 +513,9 @@ describe("Edge Cases", () => {
   });
 
   test("ddToDMS - cascade rollover (seconds → minutes → degrees)", () => {
-    // 45.99999996 → 59° 60" → 60° 0" → 46° 0' 0"
+    // 45.99999996 → 45° 59' 59.999856" → toFixed(2)="60.00"
+    // seconds rollover: 45° 59' 60.00" → 45° 60' 0"
+    // minutes rollover: 45° 60' 0"     → 46° 0' 0"
     const dd = { kind: CoordinateType.LAT, degrees: 45.99999996 };
     const dms = ddToDMS(dd, { decimals: 2 });
     expect(dms.degrees).toBe(46);
