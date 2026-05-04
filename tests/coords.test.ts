@@ -460,28 +460,164 @@ describe("Edge Cases", () => {
     expect(minLon.degrees).toBe(-180);
   });
 
-  test("clamping option", () => {
+  test("clamping option - ddToDM", () => {
     const invalidLat = { kind: CoordinateType.LAT, degrees: 95 };
     const clampedDM = ddToDM(invalidLat, { clamp: true });
     expect(clampedDM.degrees).toBe(90);
     expect(clampedDM.minutes).toBe(0);
   });
 
-  test("minutes rollover", () => {
-    const dd = { kind: CoordinateType.LAT, degrees: 45.999 };
-    const dm = ddToDM(dd);
-    // The actual behavior: 45.999 becomes 45° 59.94' (not 46° 0')
-    expect(dm.degrees).toBe(45);
-    expect(dm.minutes).toBeCloseTo(59.94, 2);
+  test("clamping option - ddToDMS", () => {
+    const invalidLon = { kind: CoordinateType.LON, degrees: -185 };
+    const clampedDMS = ddToDMS(invalidLon, { clamp: true });
+    expect(clampedDMS.degrees).toBe(180);
+    expect(clampedDMS.minutes).toBe(0);
+    expect(clampedDMS.seconds).toBe(0);
+    expect(clampedDMS.hemi).toBe(Hemisphere.W);
   });
 
-  test("seconds rollover", () => {
-    const dd = { kind: CoordinateType.LAT, degrees: 45.9999 };
-    const dms = ddToDMS(dd);
-    // The actual behavior: 45.9999 becomes 45° 59' 59.64" (not 46° 0' 0")
+  test("ddToDM - minutes rollover at default precision", () => {
+    // 45.99999999999 has frac near enough to 1 that minutes rounds to 60.00000
+    const dd = { kind: CoordinateType.LAT, degrees: 45.99999999999 };
+    const dm = ddToDM(dd);
+    expect(dm.degrees).toBe(46);
+    expect(dm.minutes).toBe(0);
+    expect(dm.hemi).toBe(Hemisphere.N);
+  });
+
+  test("ddToDM - minutes rollover at decimals=2", () => {
+    // 45.99996 → 0.99996 * 60 = 59.9976 → toFixed(2) = "60.00" → rollover
+    const dd = { kind: CoordinateType.LAT, degrees: 45.99996 };
+    const dm = ddToDM(dd, { decimals: 2 });
+    expect(dm.degrees).toBe(46);
+    expect(dm.minutes).toBe(0);
+    expect(dm.hemi).toBe(Hemisphere.N);
+  });
+
+  test("ddToDM - rollover preserves negative sign", () => {
+    const dd = { kind: CoordinateType.LON, degrees: -45.99996 };
+    const dm = ddToDM(dd, { decimals: 2 });
+    expect(dm.degrees).toBe(46);
+    expect(dm.minutes).toBe(0);
+    expect(dm.hemi).toBe(Hemisphere.W);
+  });
+
+  test("ddToDMS - seconds-only rollover (carries into minutes)", () => {
+    // 45.5166667 → 30° 60" → 31° 0"
+    const dd = { kind: CoordinateType.LAT, degrees: 45.5166667 };
+    const dms = ddToDMS(dd, { decimals: 2 });
     expect(dms.degrees).toBe(45);
-    expect(dms.minutes).toBe(59);
-    expect(dms.seconds).toBeCloseTo(59.64, 2);
+    expect(dms.minutes).toBe(31);
+    expect(dms.seconds).toBe(0);
+  });
+
+  test("ddToDMS - cascade rollover (seconds → minutes → degrees)", () => {
+    // 45.99999996 → 59° 60" → 60° 0" → 46° 0' 0"
+    const dd = { kind: CoordinateType.LAT, degrees: 45.99999996 };
+    const dms = ddToDMS(dd, { decimals: 2 });
+    expect(dms.degrees).toBe(46);
+    expect(dms.minutes).toBe(0);
+    expect(dms.seconds).toBe(0);
+    expect(dms.hemi).toBe(Hemisphere.N);
+  });
+});
+
+// ============================================================================
+// HEMISPHERE HANDLING — locks in current behavior including the
+// hemi-takes-precedence rule for backward compatibility
+// ============================================================================
+
+describe("Hemisphere Handling", () => {
+  test("dmToDD - hemi overrides signed degrees (hemi wins)", () => {
+    // signed degrees says south, hemi says north — hemi wins
+    const dm = {
+      kind: CoordinateType.LAT,
+      degrees: -45,
+      minutes: 30,
+      hemi: Hemisphere.N,
+    };
+    const dd = dmToDD(dm);
+    expect(dd.degrees).toBeCloseTo(45.5, 6);
+  });
+
+  test("dmsToDD - hemi overrides signed degrees", () => {
+    const dms = {
+      kind: CoordinateType.LON,
+      degrees: -120,
+      minutes: 30,
+      seconds: 30,
+      hemi: Hemisphere.E,
+    };
+    const dd = dmsToDD(dms);
+    expect(dd.degrees).toBeGreaterThan(0);
+    expect(dd.degrees).toBeCloseTo(120.50833, 5);
+  });
+
+  test("dmToDD - signed degrees used when hemi missing", () => {
+    const dm = { kind: CoordinateType.LAT, degrees: -45, minutes: 30 };
+    const dd = dmToDD(dm);
+    expect(dd.degrees).toBeCloseTo(-45.5, 6);
+  });
+
+  test("formatDM - falls back to dirFromSign when hemi missing", () => {
+    const positiveLat = { kind: CoordinateType.LAT, degrees: 45, minutes: 30 };
+    expect(formatDM(positiveLat)).toMatch(/45° 30\.00000' N/);
+
+    const negativeLon = { kind: CoordinateType.LON, degrees: -120, minutes: 15 };
+    expect(formatDM(negativeLon)).toMatch(/120° 15\.00000' W/);
+  });
+
+  test("formatDMS - falls back to dirFromSign when hemi missing", () => {
+    const positiveLat = {
+      kind: CoordinateType.LAT,
+      degrees: 45,
+      minutes: 30,
+      seconds: 15,
+    };
+    expect(formatDMS(positiveLat)).toMatch(/45° 30' 15\.00000" N/);
+
+    const negativeLon = {
+      kind: CoordinateType.LON,
+      degrees: -120,
+      minutes: 15,
+      seconds: 30,
+    };
+    expect(formatDMS(negativeLon)).toMatch(/120° 15' 30\.00000" W/);
+  });
+});
+
+// ============================================================================
+// PARSER QUIRKS — documents existing parseToDD behavior so refactors
+// don't drift. Several of these are intentional backward-compat warts.
+// ============================================================================
+
+describe("Parser Quirks (backward-compat)", () => {
+  test("parseToDD - silently truncates beyond 3 numbers", () => {
+    // "1 2 3 4 5" parses as 1° 2' 3" — extras dropped
+    const dd = parseToDD("1 2 3 4 5", CoordinateType.LAT);
+    expect(dd.degrees).toBeCloseTo(1 + 2 / 60 + 3 / 3600, 6);
+  });
+
+  test("parseToDD - silently absolutizes negative min/sec tokens", () => {
+    // "45 -7 22 N" treats -7 as +7
+    const dd = parseToDD("45 -7 22 N", CoordinateType.LAT);
+    expect(dd.degrees).toBeCloseTo(45 + 7 / 60 + 22 / 3600, 6);
+  });
+
+  test("parseToDD - hemi takes precedence over signed degrees", () => {
+    // "-45 N" — sign says south, hemi says north — hemi wins
+    const dd = parseToDD("-45 N", CoordinateType.LAT);
+    expect(dd.degrees).toBe(45);
+  });
+
+  test("parseToDD - lowercase hemi accepted", () => {
+    const dd = parseToDD("45 n", CoordinateType.LAT);
+    expect(dd.degrees).toBe(45);
+  });
+
+  test("parseToDD - mixed-case hemi accepted", () => {
+    const dd = parseToDD('48° 51\' 15.84" s', CoordinateType.LAT);
+    expect(dd.degrees).toBeCloseTo(-48.8544, 6);
   });
 });
 
