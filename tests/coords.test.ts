@@ -15,7 +15,10 @@ import {
 } from "../src";
 import { formatDM, formatDMS, formatDD } from "../src/formatters";
 import { CoordinateType, Hemisphere } from "../types";
-import { TEST_PRECISION } from "../data";
+
+const TEST_PRECISION = {
+  FLOATING_POINT_TOLERANCE: 5,
+};
 
 // ============================================================================
 // PARSING TESTS

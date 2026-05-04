@@ -2,5 +2,4 @@ src/**/*.test.ts
 tests
 coverage
 tsconfig.json
-jest.config.js
-tsup.config.ts
+jest.config.cjs
