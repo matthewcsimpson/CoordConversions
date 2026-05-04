@@ -37,10 +37,7 @@ import { CONVERSION_CONSTANTS, PRECISION_DEFAULTS } from "../data";
  * ```
  */
 function parseToDD(input: string | number, kind: CoordinateType): DD {
-  if (
-    typeof input === "number" ||
-    (typeof input === "string" && /^[+-]?\d+(\.\d+)?$/.test(input.trim()))
-  ) {
+  if (typeof input === "number") {
     const degrees = ensureFinite(input, "decimal degrees");
     validateRange(kind, degrees);
     return { kind, degrees };
@@ -53,52 +50,41 @@ function parseToDD(input: string | number, kind: CoordinateType): DD {
   const hemi = hemiMatch?.[1] as Hemisphere | undefined;
   const nums = raw.match(/[+-]?\d+(?:\.\d+)?/g)?.map(Number) ?? [];
 
+  if (nums.length === 0) throw new Error("Unrecognized coordinate format");
+
   if (nums.length === 1) {
-    let deg = nums[0];
-    deg = applyHemiToSign(deg, hemi);
+    const deg = applyHemiToSign(nums[0], hemi);
     validateRange(kind, deg);
     return { kind, degrees: deg };
   }
 
-  if (nums.length === 2) {
-    const [degPart, minPart] = nums;
-    const minutes = Math.abs(minPart);
-    if (minutes >= CONVERSION_CONSTANTS.MINUTES_PER_DEGREE)
-      throw new Error("Minutes must be < 60");
+  // nums.length >= 2: degrees + minutes (+ optional seconds)
+  const [degPart, minPart, secPart = 0] = nums;
+  if (Math.abs(minPart) >= CONVERSION_CONSTANTS.MINUTES_PER_DEGREE)
+    throw new Error("Minutes must be < 60");
+  if (nums.length >= 3 && Math.abs(secPart) >= CONVERSION_CONSTANTS.SECONDS_PER_MINUTE)
+    throw new Error("Seconds must be < 60");
 
-    const degAbs = Math.trunc(Math.abs(degPart));
-    let sign = Math.sign(degPart) || 1;
-    if (hemi) sign = hemi === Hemisphere.S || hemi === Hemisphere.W ? -1 : 1;
+  const deg = composeFromParts(degPart, minPart, secPart, hemi);
+  validateRange(kind, deg);
+  return { kind, degrees: deg };
+}
 
-    const deg =
-      sign * (degAbs + minutes / CONVERSION_CONSTANTS.MINUTES_PER_DEGREE);
-    validateRange(kind, deg);
-    return { kind, degrees: deg };
-  }
-
-  if (nums.length >= 3) {
-    const [degPart, minPart, secPart] = nums;
-    const minutes = Math.abs(minPart);
-    const seconds = Math.abs(secPart);
-    if (minutes >= CONVERSION_CONSTANTS.MINUTES_PER_DEGREE)
-      throw new Error("Minutes must be < 60");
-    if (seconds >= CONVERSION_CONSTANTS.SECONDS_PER_MINUTE)
-      throw new Error("Seconds must be < 60");
-
-    const degAbs = Math.trunc(Math.abs(degPart));
-    let sign = Math.sign(degPart) || 1;
-    if (hemi) sign = hemi === Hemisphere.S || hemi === Hemisphere.W ? -1 : 1;
-
-    const deg =
-      sign *
-      (degAbs +
-        minutes / CONVERSION_CONSTANTS.MINUTES_PER_DEGREE +
-        seconds / CONVERSION_CONSTANTS.SECONDS_PER_DEGREE);
-    validateRange(kind, deg);
-    return { kind, degrees: deg };
-  }
-
-  throw new Error("Unrecognized coordinate format");
+function composeFromParts(
+  degPart: number,
+  minPart: number,
+  secPart: number,
+  hemi: Hemisphere | undefined
+): number {
+  const degAbs = Math.trunc(Math.abs(degPart));
+  let sign = Math.sign(degPart) || 1;
+  if (hemi) sign = hemi === Hemisphere.S || hemi === Hemisphere.W ? -1 : 1;
+  return (
+    sign *
+    (degAbs +
+      Math.abs(minPart) / CONVERSION_CONSTANTS.MINUTES_PER_DEGREE +
+      Math.abs(secPart) / CONVERSION_CONSTANTS.SECONDS_PER_DEGREE)
+  );
 }
 
 /**
