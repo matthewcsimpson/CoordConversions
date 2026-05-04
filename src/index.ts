@@ -7,12 +7,7 @@ import {
 } from "./helpers";
 import { DD, DM, DMS } from "../types";
 import { CoordinateType, Hemisphere } from "../types";
-import {
-  CONVERSION_CONSTANTS,
-  VALIDATION_LIMITS,
-  ROLLOVER_THRESHOLDS,
-  PRECISION_DEFAULTS,
-} from "../data";
+import { CONVERSION_CONSTANTS, PRECISION_DEFAULTS } from "../data";
 
 // ============================================================================
 // BASIC FUNCTIONS - Functions that work with single coordinates
@@ -68,7 +63,7 @@ function parseToDD(input: string | number, kind: CoordinateType): DD {
   if (nums.length === 2) {
     const [degPart, minPart] = nums;
     const minutes = Math.abs(minPart);
-    if (minutes >= VALIDATION_LIMITS.MAX_MINUTES)
+    if (minutes >= CONVERSION_CONSTANTS.MINUTES_PER_DEGREE)
       throw new Error("Minutes must be < 60");
 
     const degAbs = Math.trunc(Math.abs(degPart));
@@ -85,9 +80,9 @@ function parseToDD(input: string | number, kind: CoordinateType): DD {
     const [degPart, minPart, secPart] = nums;
     const minutes = Math.abs(minPart);
     const seconds = Math.abs(secPart);
-    if (minutes >= VALIDATION_LIMITS.MAX_MINUTES)
+    if (minutes >= CONVERSION_CONSTANTS.MINUTES_PER_DEGREE)
       throw new Error("Minutes must be < 60");
-    if (seconds >= VALIDATION_LIMITS.MAX_SECONDS)
+    if (seconds >= CONVERSION_CONSTANTS.SECONDS_PER_MINUTE)
       throw new Error("Seconds must be < 60");
 
     const degAbs = Math.trunc(Math.abs(degPart));
@@ -136,7 +131,7 @@ function ddToDM(dd: DD, opts?: { decimals?: number; clamp?: boolean }): DM {
     decimals
   );
 
-  if (minutes >= ROLLOVER_THRESHOLDS.MINUTES_TO_DEGREES) {
+  if (minutes >= CONVERSION_CONSTANTS.MINUTES_PER_DEGREE) {
     const rolled = degInt >= 0 ? degInt + 1 : degInt - 1;
     return {
       kind: dd.kind,
@@ -188,11 +183,11 @@ function ddToDMS(dd: DD, opts?: { decimals?: number; clamp?: boolean }): DMS {
 
   let degreesAbs = Math.abs(degInt);
 
-  if (seconds >= ROLLOVER_THRESHOLDS.SECONDS_TO_MINUTES) {
+  if (seconds >= CONVERSION_CONSTANTS.SECONDS_PER_MINUTE) {
     seconds = 0;
     minutes += 1;
   }
-  if (minutes >= ROLLOVER_THRESHOLDS.MINUTES_TO_DEGREES) {
+  if (minutes >= CONVERSION_CONSTANTS.MINUTES_PER_DEGREE) {
     minutes = 0;
     degreesAbs += 1;
   }
@@ -212,7 +207,7 @@ function ddToDMS(dd: DD, opts?: { decimals?: number; clamp?: boolean }): DMS {
  * @param dm - The degrees-minutes object to convert
  * @returns A DD object with decimal degrees
  *
- * @throws {Error} When minutes are out of valid range [0, VALIDATION_LIMITS.MAX_MINUTES)
+ * @throws {Error} When minutes are not in [0, 60)
  *
  * @example
  * ```typescript
@@ -222,7 +217,7 @@ function ddToDMS(dd: DD, opts?: { decimals?: number; clamp?: boolean }): DMS {
  * ```
  */
 function dmToDD(dm: DM): DD {
-  if (dm.minutes < 0 || dm.minutes >= VALIDATION_LIMITS.MAX_MINUTES)
+  if (dm.minutes < 0 || dm.minutes >= CONVERSION_CONSTANTS.MINUTES_PER_DEGREE)
     throw new Error("Minutes must be in [0, 60)");
   const base =
     Math.abs(dm.degrees) + dm.minutes / CONVERSION_CONSTANTS.MINUTES_PER_DEGREE;
@@ -237,7 +232,7 @@ function dmToDD(dm: DM): DD {
  * @param dms - The degrees-minutes-seconds object to convert
  * @returns A DD object with decimal degrees
  *
- * @throws {Error} When minutes or seconds are out of valid range [0, VALIDATION_LIMITS.MAX_MINUTES/MAX_SECONDS)
+ * @throws {Error} When minutes are not in [0, 60) or seconds are not in [0, 60)
  *
  * @example
  * ```typescript
@@ -247,9 +242,9 @@ function dmToDD(dm: DM): DD {
  * ```
  */
 function dmsToDD(dms: DMS): DD {
-  if (dms.minutes < 0 || dms.minutes >= VALIDATION_LIMITS.MAX_MINUTES)
+  if (dms.minutes < 0 || dms.minutes >= CONVERSION_CONSTANTS.MINUTES_PER_DEGREE)
     throw new Error("Minutes must be in [0, 60)");
-  if (dms.seconds < 0 || dms.seconds >= VALIDATION_LIMITS.MAX_SECONDS)
+  if (dms.seconds < 0 || dms.seconds >= CONVERSION_CONSTANTS.SECONDS_PER_MINUTE)
     throw new Error("Seconds must be in [0, 60)");
   const base =
     Math.abs(dms.degrees) +
@@ -361,7 +356,7 @@ function ddPairToDMS(
  * @param lonDM - The longitude DM object
  * @returns A tuple of DD objects [latitude, longitude]
  *
- * @throws {Error} When minutes are out of valid range [0, VALIDATION_LIMITS.MAX_MINUTES) for either coordinate
+ * @throws {Error} When minutes are not in [0, 60) for either coordinate
  *
  * @example
  * ```typescript
@@ -385,7 +380,7 @@ function dmPairToDD(latDM: DM, lonDM: DM): [DD, DD] {
  * @param lonDMS - The longitude DMS object
  * @returns A tuple of DD objects [latitude, longitude]
  *
- * @throws {Error} When minutes or seconds are out of valid range [0, VALIDATION_LIMITS.MAX_MINUTES/MAX_SECONDS) for either coordinate
+ * @throws {Error} When minutes are not in [0, 60) or seconds are not in [0, 60) for either coordinate
  *
  * @example
  * ```typescript

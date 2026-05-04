@@ -1,4 +1,9 @@
-export const DEG_MAX = { lat: 90, lon: 180 };
+import { CoordinateType } from "../types";
+
+export const DEG_MAX: Record<CoordinateType, number> = {
+  [CoordinateType.LAT]: 90,
+  [CoordinateType.LON]: 180,
+};
 
 export const PRECISION_DEFAULTS = {
   DD_DECIMALS: 5,
@@ -8,16 +13,6 @@ export const PRECISION_DEFAULTS = {
 
 export const CONVERSION_CONSTANTS = {
   MINUTES_PER_DEGREE: 60,
-  SECONDS_PER_DEGREE: 3600,
   SECONDS_PER_MINUTE: 60,
-};
-
-export const VALIDATION_LIMITS = {
-  MAX_MINUTES: 60,
-  MAX_SECONDS: 60,
-};
-
-export const ROLLOVER_THRESHOLDS = {
-  MINUTES_TO_DEGREES: 60,
-  SECONDS_TO_MINUTES: 60,
+  SECONDS_PER_DEGREE: 3600,
 };
