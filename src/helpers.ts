@@ -100,7 +100,7 @@ function clampDegrees(kind: CoordinateType, deg: number): number {
 function ensureFinite(n: unknown, label = "number"): number {
   const v = typeof n === "string" ? Number(n.trim()) : (n as number);
   if (!Number.isFinite(v)) {
-    const display = typeof n === "string" ? `"${n}"` : String(n);
+    const display = typeof n === "string" ? JSON.stringify(n) : String(n);
     throw new Error(`Invalid ${label}: ${display}`);
   }
   return v;
