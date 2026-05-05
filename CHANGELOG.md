@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.13](https://github.com/matthewcsimpson/CoordConversions/compare/v1.0.12...v1.0.13) (2026-05-05)
+
+
+### Bug Fixes
+
+* republish to recover from failed 1.0.11 and 1.0.12 publish runs ([#18](https://github.com/matthewcsimpson/CoordConversions/issues/18)) ([3207a46](https://github.com/matthewcsimpson/CoordConversions/commit/3207a46e1a825c7131637e6126936b7166d26d06))
+
 ## [1.0.12](https://github.com/matthewcsimpson/CoordConversions/compare/v1.0.11...v1.0.12) (2026-05-05)
 
 
