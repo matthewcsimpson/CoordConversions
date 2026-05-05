@@ -121,14 +121,16 @@ function ensureFinite(n: unknown, label = "number"): number {
  * ```typescript
  * validateRange(CoordinateType.LAT, 45)   // OK (valid latitude)
  * validateRange(CoordinateType.LON, 122)   // OK (valid longitude)
- * validateRange(CoordinateType.LAT, 95)    // throws Error: lat degrees out of range: 95
- * validateRange(CoordinateType.LON, 185)    // throws Error: lon degrees out of range: 185
+ * validateRange(CoordinateType.LAT, 95)    // throws Error: lat degrees out of range: 95 (must be in [-90, 90])
+ * validateRange(CoordinateType.LON, 185)    // throws Error: lon degrees out of range: 185 (must be in [-180, 180])
  * ```
  */
 function validateRange(kind: CoordinateType, deg: number) {
   const max = DEG_MAX[kind];
   if (deg < -max || deg > max)
-    throw new Error(`${kind} degrees out of range: ${deg}`);
+    throw new Error(
+      `${kind} degrees out of range: ${deg} (must be in [${-max}, ${max}])`
+    );
 }
 
 // Export helper functions for internal use by other modules

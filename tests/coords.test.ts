@@ -422,6 +422,16 @@ describe("Error Handling", () => {
     expect(() => dmsToDD(dms)).toThrow("Seconds must be in [0, 60)");
   });
 
+  test("validateRange - error messages include valid bounds", () => {
+    // existing 'lat degrees out of range: 91' substring preserved as a prefix
+    expect(() => parseToDD("91", CoordinateType.LAT)).toThrow(
+      /lat degrees out of range: 91 \(must be in \[-90, 90\]\)/
+    );
+    expect(() => parseToDD("181", CoordinateType.LON)).toThrow(
+      /must be in \[-180, 180\]/
+    );
+  });
+
   test("dmToDD / dmsToDD - error messages include offending value", () => {
     expect(() =>
       dmToDD({
