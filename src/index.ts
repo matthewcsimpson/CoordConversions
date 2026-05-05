@@ -225,7 +225,7 @@ function decomposeDD(
  */
 function dmToDD(dm: DM): DD {
   if (dm.minutes < 0 || dm.minutes >= CONVERSION_CONSTANTS.MINUTES_PER_DEGREE)
-    throw new Error("Minutes must be in [0, 60)");
+    throw new Error(`Minutes must be in [0, 60) (got ${dm.minutes})`);
   const base =
     Math.abs(dm.degrees) + dm.minutes / CONVERSION_CONSTANTS.MINUTES_PER_DEGREE;
   // hemi takes precedence when present; otherwise sign comes from degrees
@@ -251,9 +251,9 @@ function dmToDD(dm: DM): DD {
  */
 function dmsToDD(dms: DMS): DD {
   if (dms.minutes < 0 || dms.minutes >= CONVERSION_CONSTANTS.MINUTES_PER_DEGREE)
-    throw new Error("Minutes must be in [0, 60)");
+    throw new Error(`Minutes must be in [0, 60) (got ${dms.minutes})`);
   if (dms.seconds < 0 || dms.seconds >= CONVERSION_CONSTANTS.SECONDS_PER_MINUTE)
-    throw new Error("Seconds must be in [0, 60)");
+    throw new Error(`Seconds must be in [0, 60) (got ${dms.seconds})`);
   const base =
     Math.abs(dms.degrees) +
     dms.minutes / CONVERSION_CONSTANTS.MINUTES_PER_DEGREE +

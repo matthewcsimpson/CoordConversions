@@ -422,6 +422,27 @@ describe("Error Handling", () => {
     expect(() => dmsToDD(dms)).toThrow("Seconds must be in [0, 60)");
   });
 
+  test("dmToDD / dmsToDD - error messages include offending value", () => {
+    expect(() =>
+      dmToDD({
+        kind: CoordinateType.LAT,
+        degrees: 45,
+        minutes: 75,
+        hemi: Hemisphere.N,
+      })
+    ).toThrow(/got 75/);
+
+    expect(() =>
+      dmsToDD({
+        kind: CoordinateType.LAT,
+        degrees: 45,
+        minutes: 30,
+        seconds: 88,
+        hemi: Hemisphere.N,
+      })
+    ).toThrow(/got 88/);
+  });
+
   test("parseToDD - error messages include offending input", () => {
     // unrecognized format includes the raw input (quoted)
     expect(() => parseToDD("complete nonsense", CoordinateType.LAT)).toThrow(
