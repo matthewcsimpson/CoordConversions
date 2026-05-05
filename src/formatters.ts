@@ -83,9 +83,7 @@ export function formatDMPair(
   lonDM: DM,
   decimals = PRECISION_DEFAULTS.DM_DECIMALS
 ): [string, string] {
-  const latStr = formatDM(latDM, decimals);
-  const lonStr = formatDM(lonDM, decimals);
-  return [latStr, lonStr];
+  return [formatDM(latDM, decimals), formatDM(lonDM, decimals)];
 }
 
 /**
@@ -110,9 +108,7 @@ export function formatDMSPair(
   lonDMS: DMS,
   decimals = PRECISION_DEFAULTS.DMS_DECIMALS
 ): [string, string] {
-  const latStr = formatDMS(latDMS, decimals);
-  const lonStr = formatDMS(lonDMS, decimals);
-  return [latStr, lonStr];
+  return [formatDMS(latDMS, decimals), formatDMS(lonDMS, decimals)];
 }
 
 /**
@@ -137,7 +133,5 @@ export function formatDDPair(
   lonDD: DD,
   decimals = PRECISION_DEFAULTS.DD_DECIMALS
 ): [string, string] {
-  const latStr = formatDD(latDD, decimals);
-  const lonStr = formatDD(lonDD, decimals);
-  return [latStr, lonStr];
+  return [formatDD(latDD, decimals), formatDD(lonDD, decimals)];
 }
