@@ -562,6 +562,17 @@ describe("Hemisphere Handling", () => {
     expect(dd.degrees).toBeCloseTo(-45.5, 6);
   });
 
+  test("dmsToDD - signed degrees used when hemi missing", () => {
+    const dms = {
+      kind: CoordinateType.LAT,
+      degrees: -45,
+      minutes: 30,
+      seconds: 30,
+    };
+    const dd = dmsToDD(dms);
+    expect(dd.degrees).toBeCloseTo(-45.50833, 5);
+  });
+
   test("formatDM - falls back to dirFromSign when hemi missing", () => {
     const positiveLat = { kind: CoordinateType.LAT, degrees: 45, minutes: 30 };
     expect(formatDM(positiveLat)).toMatch(/45° 30\.00000' N/);
