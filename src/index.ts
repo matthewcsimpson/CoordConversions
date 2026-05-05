@@ -53,7 +53,12 @@ function parseToDD(input: string | number, kind: CoordinateType): DD {
   if (nums.length === 0) throw new Error("Unrecognized coordinate format");
 
   if (nums.length === 1) {
-    const deg = applyHemiToSign(nums[0], hemi);
+    // ensureFinite preserves prior semantics for numeric strings that
+    // overflow to Infinity (e.g., long all-digit inputs) — without this,
+    // they'd reach validateRange and produce a misleading 'out of range'
+    // error instead of the original 'Invalid decimal degrees'.
+    const value = ensureFinite(nums[0], "decimal degrees");
+    const deg = applyHemiToSign(value, hemi);
     validateRange(kind, deg);
     return { kind, degrees: deg };
   }
