@@ -92,14 +92,17 @@ function clampDegrees(kind: CoordinateType, deg: number): number {
  * ensureFinite(45.123)           // 45.123
  * ensureFinite("45.123")         // 45.123
  * ensureFinite("45.123", "lat")  // 45.123
- * ensureFinite("invalid")        // throws Error: Invalid number
- * ensureFinite(NaN)              // throws Error: Invalid number
- * ensureFinite(Infinity)         // throws Error: Invalid number
+ * ensureFinite("invalid")        // throws Error: Invalid number: "invalid"
+ * ensureFinite(NaN)              // throws Error: Invalid number: NaN
+ * ensureFinite(Infinity)         // throws Error: Invalid number: Infinity
  * ```
  */
 function ensureFinite(n: unknown, label = "number"): number {
   const v = typeof n === "string" ? Number(n.trim()) : (n as number);
-  if (!Number.isFinite(v)) throw new Error(`Invalid ${label}`);
+  if (!Number.isFinite(v)) {
+    const display = typeof n === "string" ? JSON.stringify(n) : String(n);
+    throw new Error(`Invalid ${label}: ${display}`);
+  }
   return v;
 }
 

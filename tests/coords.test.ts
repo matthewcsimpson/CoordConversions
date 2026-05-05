@@ -421,6 +421,27 @@ describe("Error Handling", () => {
     };
     expect(() => dmsToDD(dms)).toThrow("Seconds must be in [0, 60)");
   });
+
+  test("parseToDD - error messages include offending input", () => {
+    // unrecognized format includes the raw input (quoted)
+    expect(() => parseToDD("complete nonsense", CoordinateType.LAT)).toThrow(
+      /"complete nonsense"/
+    );
+
+    // out-of-range minutes/seconds include the actual value
+    expect(() => parseToDD("45° 75' N", CoordinateType.LAT)).toThrow(/75/);
+    expect(() => parseToDD('45° 7\' 88" N', CoordinateType.LAT)).toThrow(/88/);
+
+    // huge digit string overflowing to Infinity surfaces the input
+    expect(() => parseToDD("9".repeat(400), CoordinateType.LAT)).toThrow(
+      /Invalid decimal degrees:/
+    );
+
+    // unsupported input type names the type
+    expect(() =>
+      parseToDD(null as unknown as string, CoordinateType.LAT)
+    ).toThrow(/Unsupported input type: object/);
+  });
 });
 
 // ============================================================================
