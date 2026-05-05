@@ -113,12 +113,12 @@ function composeFromParts(
  * ```
  */
 function ddToDM(dd: DD, opts?: { decimals?: number; clamp?: boolean }): DM {
-  const decimals = opts?.decimals ?? PRECISION_DEFAULTS.DM_DECIMALS;
-  const degVal = opts?.clamp ? clampDegrees(dd.kind, dd.degrees) : dd.degrees;
-
-  const degInt = Math.trunc(degVal);
-  const frac = Math.abs(degVal - degInt);
-  let minutes = +(frac * CONVERSION_CONSTANTS.MINUTES_PER_DEGREE).toFixed(
+  const { decimals, degVal, degInt, frac } = decomposeDD(
+    dd,
+    opts,
+    PRECISION_DEFAULTS.DM_DECIMALS
+  );
+  const minutes = +(frac * CONVERSION_CONSTANTS.MINUTES_PER_DEGREE).toFixed(
     decimals
   );
 
@@ -161,11 +161,11 @@ function ddToDM(dd: DD, opts?: { decimals?: number; clamp?: boolean }): DM {
  * ```
  */
 function ddToDMS(dd: DD, opts?: { decimals?: number; clamp?: boolean }): DMS {
-  const decimals = opts?.decimals ?? PRECISION_DEFAULTS.DMS_DECIMALS;
-  const degVal = opts?.clamp ? clampDegrees(dd.kind, dd.degrees) : dd.degrees;
-
-  const degInt = Math.trunc(degVal);
-  const frac = Math.abs(degVal - degInt);
+  const { decimals, degVal, degInt, frac } = decomposeDD(
+    dd,
+    opts,
+    PRECISION_DEFAULTS.DMS_DECIMALS
+  );
   let minutes = Math.floor(frac * CONVERSION_CONSTANTS.MINUTES_PER_DEGREE);
   let seconds = +(
     frac * CONVERSION_CONSTANTS.SECONDS_PER_DEGREE -
@@ -192,6 +192,20 @@ function ddToDMS(dd: DD, opts?: { decimals?: number; clamp?: boolean }): DMS {
   };
 }
 
+// Shared prelude for ddToDM / ddToDMS — resolve precision, optionally
+// clamp, then split degVal into trunc + abs(frac).
+function decomposeDD(
+  dd: DD,
+  opts: { decimals?: number; clamp?: boolean } | undefined,
+  defaultDecimals: number
+): { decimals: number; degVal: number; degInt: number; frac: number } {
+  const decimals = opts?.decimals ?? defaultDecimals;
+  const degVal = opts?.clamp ? clampDegrees(dd.kind, dd.degrees) : dd.degrees;
+  const degInt = Math.trunc(degVal);
+  const frac = Math.abs(degVal - degInt);
+  return { decimals, degVal, degInt, frac };
+}
+
 /**
  * Converts Degrees-Minutes (DM) format back to Decimal Degrees (DD).
  *
@@ -212,7 +226,8 @@ function dmToDD(dm: DM): DD {
     throw new Error("Minutes must be in [0, 60)");
   const base =
     Math.abs(dm.degrees) + dm.minutes / CONVERSION_CONSTANTS.MINUTES_PER_DEGREE;
-  const signed = applyHemiToSign(dm.degrees < 0 ? -base : base, dm.hemi);
+  // hemi takes precedence when present; otherwise sign comes from degrees
+  const signed = dm.hemi ? applyHemiToSign(base, dm.hemi) : (dm.degrees < 0 ? -base : base);
   validateRange(dm.kind, signed);
   return { kind: dm.kind, degrees: signed };
 }
@@ -241,7 +256,8 @@ function dmsToDD(dms: DMS): DD {
     Math.abs(dms.degrees) +
     dms.minutes / CONVERSION_CONSTANTS.MINUTES_PER_DEGREE +
     dms.seconds / CONVERSION_CONSTANTS.SECONDS_PER_DEGREE;
-  const signed = applyHemiToSign(dms.degrees < 0 ? -base : base, dms.hemi);
+  // hemi takes precedence when present; otherwise sign comes from degrees
+  const signed = dms.hemi ? applyHemiToSign(base, dms.hemi) : (dms.degrees < 0 ? -base : base);
   validateRange(dms.kind, signed);
   return { kind: dms.kind, degrees: signed };
 }
