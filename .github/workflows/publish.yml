@@ -26,14 +26,11 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: "22"
+          # Node 24 ships with npm 11.x, which has the OIDC trusted
+          # publishing support that Node 22's npm 10.x lacks.
+          node-version: "24"
           cache: npm
           registry-url: https://registry.npmjs.org
-
-      # Node 22 ships with npm 10.x. OIDC trusted publishing requires
-      # npm >= 11.5.1, so upgrade before any npm command runs.
-      - name: Upgrade npm
-        run: npm install -g npm@latest
 
       - name: Install
         run: npm ci
