@@ -43,14 +43,16 @@ function parseToDD(input: string | number, kind: CoordinateType): DD {
     return { kind, degrees };
   }
 
-  if (typeof input !== "string") throw new Error("Unsupported input type");
+  if (typeof input !== "string")
+    throw new Error(`Unsupported input type: ${typeof input}`);
 
   const raw = input.trim().toUpperCase();
   const hemiMatch = raw.match(/\b([NSEW])\b/);
   const hemi = hemiMatch?.[1] as Hemisphere | undefined;
   const nums = raw.match(/[+-]?\d+(?:\.\d+)?/g)?.map(Number) ?? [];
 
-  if (nums.length === 0) throw new Error("Unrecognized coordinate format");
+  if (nums.length === 0)
+    throw new Error(`Unrecognized coordinate format: ${JSON.stringify(input)}`);
 
   if (nums.length === 1) {
     // ensureFinite preserves prior semantics for numeric strings that
@@ -66,9 +68,9 @@ function parseToDD(input: string | number, kind: CoordinateType): DD {
   // nums.length >= 2: degrees + minutes (+ optional seconds)
   const [degPart, minPart, secPart = 0] = nums;
   if (Math.abs(minPart) >= CONVERSION_CONSTANTS.MINUTES_PER_DEGREE)
-    throw new Error("Minutes must be < 60");
+    throw new Error(`Minutes must be < 60 (got ${minPart})`);
   if (nums.length >= 3 && Math.abs(secPart) >= CONVERSION_CONSTANTS.SECONDS_PER_MINUTE)
-    throw new Error("Seconds must be < 60");
+    throw new Error(`Seconds must be < 60 (got ${secPart})`);
 
   const deg = composeFromParts(degPart, minPart, secPart, hemi);
   validateRange(kind, deg);
