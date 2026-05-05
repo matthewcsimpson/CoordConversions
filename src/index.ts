@@ -293,9 +293,10 @@ function parsePairToDD(
   latInput: string | number,
   lonInput: string | number
 ): [DD, DD] {
-  const lat = parseToDD(latInput, CoordinateType.LAT);
-  const lon = parseToDD(lonInput, CoordinateType.LON);
-  return [lat, lon];
+  return [
+    parseToDD(latInput, CoordinateType.LAT),
+    parseToDD(lonInput, CoordinateType.LON),
+  ];
 }
 
 /**
@@ -322,9 +323,7 @@ function ddPairToDM(
   lonDD: DD,
   opts?: { decimals?: number; clamp?: boolean }
 ): [DM, DM] {
-  const latDM = ddToDM(latDD, opts);
-  const lonDM = ddToDM(lonDD, opts);
-  return [latDM, lonDM];
+  return [ddToDM(latDD, opts), ddToDM(lonDD, opts)];
 }
 
 /**
@@ -351,9 +350,7 @@ function ddPairToDMS(
   lonDD: DD,
   opts?: { decimals?: number; clamp?: boolean }
 ): [DMS, DMS] {
-  const latDMS = ddToDMS(latDD, opts);
-  const lonDMS = ddToDMS(lonDD, opts);
-  return [latDMS, lonDMS];
+  return [ddToDMS(latDD, opts), ddToDMS(lonDD, opts)];
 }
 
 /**
@@ -375,9 +372,7 @@ function ddPairToDMS(
  * ```
  */
 function dmPairToDD(latDM: DM, lonDM: DM): [DD, DD] {
-  const latDD = dmToDD(latDM);
-  const lonDD = dmToDD(lonDM);
-  return [latDD, lonDD];
+  return [dmToDD(latDM), dmToDD(lonDM)];
 }
 
 /**
@@ -399,9 +394,7 @@ function dmPairToDD(latDM: DM, lonDM: DM): [DD, DD] {
  * ```
  */
 function dmsPairToDD(latDMS: DMS, lonDMS: DMS): [DD, DD] {
-  const latDD = dmsToDD(latDMS);
-  const lonDD = dmsToDD(lonDMS);
-  return [latDD, lonDD];
+  return [dmsToDD(latDMS), dmsToDD(lonDMS)];
 }
 
 // Export core functions
